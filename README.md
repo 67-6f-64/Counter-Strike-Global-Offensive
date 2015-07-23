@@ -1,5 +1,4 @@
 # Counter-Strike-Global-Offensive
-CS:GO C++ version 0.0.0.1
 
 CS:GO EXTERNAL CHEAT ( Console app)
 
