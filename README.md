@@ -7,12 +7,6 @@ CS:GO EXTERNAL CHEAT ( Console app)
 * Thread to read memory
 
 
-ReadMemory:
-
-a) localPlayer: Health, Team, Flags, vecPos(x,y,z), crosshairId, playerID;
-
-b) entityLoop: Health, Team, Flags, vecPos(x,y,z), entityID;
-
 Threads:
 
 a) ReadMemory:  
