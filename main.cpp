@@ -17,13 +17,26 @@ int main()
 
 	std::cout << "Start Thread to Read Memory? (1) to yes, (2) to no" << std::endl;
 	std::cin >> option;
-	if (option == 1){		
-		mem->StartReadMemory(); //threads.cpp
-	}		
 	
-	delete mem; //delete object
-
-	system("pause");
+	
+	switch (option)
+	{
+	case 1:	
+		while (true){
+			if (!mem->reading)
+				mem->StartReadMemory();
+			Sleep(100000);
+		}
+		break;
+	case 2:		
+		delete mem; //delete object
+		return 0;
+		break;
+	default:
+		delete mem; //delete object
+		return 0;
+		break;
+	}
 
 	return 0;
 }
