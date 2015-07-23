@@ -3,7 +3,7 @@ CS:GO C++
 
 CS:GO EXTERNAL CHEAT ( Console app)
 
-* Templayte (RPM, WPM)
+* Template (RPM, WPM)
 * Typedef Vector
 
 
