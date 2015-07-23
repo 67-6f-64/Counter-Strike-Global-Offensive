@@ -3,7 +3,12 @@ CS:GO C++
 
 CS:GO EXTERNAL CHEAT
 
+* Templayte (RPM, WPM)
+* Typedef Vector
+
+
 ReadMemory:
+
 a) localPlayer
 -Health
 -Team
