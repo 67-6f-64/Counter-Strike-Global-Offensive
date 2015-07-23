@@ -6,12 +6,12 @@ Memory memory;
 
 void Memory::StartReadMemory() //call this function to start ReadMemory thread
 {
-	memory.reading = true;
 	HANDLE start = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ReadMemory, NULL, 0, NULL);
 }
 
 DWORD Memory::ReadMemory(LPVOID lParam) // thread: ReadMemory where we get data from memory's game
 {
+	memory.reading = true;
 	while (true)
 	{
 		system("cls");
@@ -32,7 +32,7 @@ DWORD Memory::ReadMemory(LPVOID lParam) // thread: ReadMemory where we get data 
 			if (memory.entityLoop == NULL)
 				continue;
 
-			if (memory.GetEntTeam(memory.entityLoop) != memory.GetmyTeam())
+			if (memory.GetEntTeam(memory.entityLoop) != memory.GetmyTeam() && memory.GetEntHealth(memory.entityLoop) > 0)
 			{
 				std::cout << "Enemy->[" << memory.GetEntId(memory.entityLoop) << "]" << std::endl << std::endl;
 				std::cout << "-> Health: " << memory.GetEntHealth(memory.entityLoop) << std::endl;
