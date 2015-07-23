@@ -9,9 +9,9 @@ CS:GO EXTERNAL CHEAT ( Console app)
 
 ReadMemory:
 
-a) localPlayer: Health, Team, Flags, vecPos(x,y,z), crosshairId
+a) localPlayer: Health, Team, Flags, vecPos(x,y,z), crosshairId, playerID;
 
-b) entityLoop: Health, Team, Flags, vecPos(x,y,z)
+b) entityLoop: Health, Team, Flags, vecPos(x,y,z), entityID;
 
 
 Working in progress
