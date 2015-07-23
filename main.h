@@ -33,6 +33,7 @@ int Menu()
 		Menu();
 		break;		
 	case 0:
+		delete mem;
 		return 0;
 		break;
 	default:
