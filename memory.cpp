@@ -17,7 +17,7 @@ Memory::Memory()
 	{
 		gameHwnd = FindWindow(NULL, "Counter-Strike: Global Offensive");		
 		GetWindowThreadProcessId(gameHwnd, &gamePID); 		
-		proc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, gamePID);
+		proc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, gamePID); //need change PROCESS_ALL_ACCELL to read only
 	}		
 	
 	clientDll = Module("client.dll", gamePID);
@@ -69,16 +69,24 @@ int Memory::GetmyFlags()
 	return flags;
 }
 
+Vector Memory::GetmyPos()
+{
+	myPos = RPM<Vector>(proc, (GetlocalPlayer() + entity.vecOrigin), sizeof(Vector));
+	return myPos;
+}
+
 DWORD Memory::GetClientDll()
 {
 	if (clientDll != NULL)
 		return clientDll;
+	return 0;
 }
 
 DWORD Memory::GetEngineDll()
 {
 	if (engineDll != NULL)
 		return engineDll;
+	return 0;
 }
 
 DWORD Memory::Module(LPCSTR moduleName, DWORD pId)
@@ -93,26 +101,6 @@ DWORD Memory::Module(LPCSTR moduleName, DWORD pId)
 			return (DWORD)allinfo.modBaseAddr;
 		}
 		haveProcess = Module32Next(hSnapShot, &allinfo);
-	}
-	return 0;
-}
-
-void Memory::StartReadMemory()
-{
-	HANDLE start = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ReadMemory, NULL, 0, NULL);
-}
-
-Memory memory;
-
-DWORD Memory::ReadMemory(LPVOID lParam)
-{
-	while (true)
-	{
-		system("cls");
-		std::cout << "My Player:" << std::endl;
-		std::cout << "Health: " << memory.GetmyHealth() << " Team: " << memory.GetmyTeam()
-			<< " Flags: " << memory.GetmyFlags() << std::endl;
-		Sleep(250);
 	}
 	return 0;
 }
