@@ -33,7 +33,7 @@ int Menu()
 		Menu();
 		break;		
 	case 0:
-		return 0;
+		ExitProcess(0);
 		break;
 	default:
 		Menu();
