@@ -9,10 +9,10 @@ CS:GO EXTERNAL CHEAT ( Console app)
 
 ReadMemory:
 
-a) localPlayer
--Health
--Team
--Flags
+a) localPlayer:
+Health
+Team
+Flags
 
 b) entityLoop
 
