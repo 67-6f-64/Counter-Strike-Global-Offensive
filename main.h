@@ -1,110 +1,59 @@
-#ifndef MAIN_H_
-#define MAIN_H_
+#include "main.h"
 
-#include <iostream>
-#include <Windows.h>
-#include <TlHelp32.h>
-#include <regex>
-#include <string>
+//#include "offset.h" in main.h and extern it here so every cpp file have access to it
+Entity entity;
 
-template<typename TYPE>
-TYPE RPM(HANDLE proc, DWORD address, SIZE_T size){
-	TYPE buffer = TYPE();
-	::ReadProcessMemory(proc, (LPCVOID)address, &buffer, size, 0);
-	return buffer;
-}
+Memory* mem = new Memory(); //create new object of memory class
 
-template<typename TYPE>
-BOOL WPM(HANDLE proc, DWORD address, TYPE dataToWrite){
-	TYPE buffer = dataToWrite;
-	return ::WriteProcessMemory(proc, (LPVOID)address, &buffer, sizeof(buffer), 0);
-}
-
-typedef struct
+int Menu()
 {
-	float   x;
-	float   y;
-	float   z;
-}Vector, *PVector;
+	int option = 0;
+	system("cls");
+	std::cout << "MENU: choose a number and type [ENTER]" << std::endl;
+	std::cout << "(1) Only Read Memory " << mem->reading <<std::endl;
+	std::cout << "(2) TriggerBot inCrossHairId " << mem->trigger << std::endl;
 
-class cheat{
-public:
-	HWND game;
-	DWORD gamePid;
-	HANDLE gameHandle;
+	std::cout << "(0) EXIT" << std::endl;
+	std::cin >> option;
+	switch (option)
+	{
+	case 1:			
+		if (!mem->reading){
+			mem->StartReadMemory();
+			mem->reading = true;
+		}		
+		Menu();	
+		break;
+	case 2:			
+		if (!mem->trigger)
+		{
+			mem->StartTrigger();
+			mem->trigger = true;
+		}							
+		Menu();
+		break;		
+	case 0:
+		return 0;
+		break;
+	default:
+		Menu();
+		break;
+	}
+}
 
-	DWORD GetModule(LPCSTR processName, int processPid);
-	void GetAddress();
+int main()
+{
+	int option = 0;
+	system("Color 1B");
 
-	bool aim = false;
-	void startAimbot();
-	static DWORD Aimbot(LPVOID lpParam);
-	double Distance(Vector a, Vector b, bool metters);
-	Vector GetBone(int iBone);
-	Vector BonePos(DWORD target, DWORD address, int boneId);
-	bool WorldToScreen(Vector vStart, Vector &vOut, float *flMatrix);
-	float DistanceBetweenCross(float X, float Y);
-	Vector CalcAngle(Vector& src, Vector& dst);
+	// to get health use mem->GetHealth() e.g
 
-	bool glow = false;
-	void startGlow();
-	static DWORD Glow(LPVOID lpParam);
+	std::cout << "-----------ADDRESS'S CLIENT.DLL ENGINE.DL----------------------------" << std::endl;
+	std::cout << "client.dll: " << mem->GetClientDll() << " engine.dll: " << mem->GetEngineDll() << std::endl << std::endl;
 
-	bool radar = false;
-	void startRadar();
-	static DWORD Radar(LPVOID lpParam);
+	Menu();
 
-	bool norecoil = false;
-	void startNoRecoil();
-	static DWORD NoRecoil(LPVOID lpParam);
-	bool IsRifle(int id);
-	float NormalX(float angle);
-	float NormalY(float angle);
+	delete mem;
 
-	bool readmemory = false;
-	void startReadMemory();
-	static DWORD ReadMemory(LPVOID lpParam);
-	void WriteGlow(HANDLE proc, float r, float g, float b, float a, bool Occluded, bool Unoccluded);
-
-	//dlls
-	DWORD clientDll;
-	DWORD engineDll;
-	//pointers
-	DWORD myPlayer;
-	DWORD entityBase;
-	DWORD entity;
-	DWORD engine;
-	DWORD glowBs;
-	DWORD weaponEntity;
-	DWORD weaponBaseIndex;
-	DWORD myPlayerBoneBase;
-
-	//vars
-	int myPlayerHealth;
-	int myPlayerTeam;
-	int entityHealth;
-	int entityTeam;
-	bool entityDormant;
-	int glowIndex;
-	int shotsFired;
-	Vector aPunch;
-	Vector oldAngle;
-	int weaponId;
-	int weaponAmmo;
-	bool weaponReloading;
-	Vector vMatrix;
-};
-
-class others{
-public:
-	int option;
-
-	bool isNumber(int input);
-	void Menu();
-
-};
-
-extern cheat Cheat;
-extern others Others;
-
-#endif
+	return 0;
+}
