@@ -5,6 +5,14 @@
 #include <iostream>
 #include <TlHelp32.h>
 
+//VECTOR x,y,z struct for vecOrigin
+typedef struct
+{
+	float   x;
+	float   y;
+	float   z;
+}Vector, *PVector;
+
 //Class to get data from game
 class Memory
 {
@@ -23,7 +31,11 @@ public:
 	int GetmyHealth(); //get data health
 	int GetmyTeam(); //get data team
 	int GetmyFlags(); //get data Flags
-	//Vector GetPos(); //get data pos: x, y, z
+	Vector GetmyPos(); //get data pos: x, y, z
+	
+	
+	
+	Vector GetentityPos();
 
 protected:
 	HWND gameHwnd;
@@ -35,8 +47,9 @@ protected:
 	DWORD entityLoop;
 	int health;
 	int team;
-	float flags;
-	//Vector pos = { 0, 0, 0 };
+	int flags;
+	Vector myPos;
+	Vector entityPos;
 };
 
 //ReadProcessMemory template
@@ -53,15 +66,6 @@ BOOL WPM(HANDLE proc, DWORD address, TYPE dataToWrite){
 	TYPE buffer = dataToWrite;
 	return ::WriteProcessMemory(proc, (LPVOID)address, &buffer, sizeof(buffer), 0);
 }
-
-//VECTOR x,y,z struct for vecOrigin
-typedef struct
-{
-	float   x;
-	float   y;
-	float   z;
-}Vector, *PVector;
-
 
 
 #endif
