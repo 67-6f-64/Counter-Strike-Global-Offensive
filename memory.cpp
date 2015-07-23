@@ -42,6 +42,8 @@ Memory::~Memory()
 		CloseHandle(proc);
 	if (reading)
 		reading = false;
+	if (trigger)
+		trigger = false;
 }
 
 
