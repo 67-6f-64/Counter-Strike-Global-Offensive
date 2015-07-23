@@ -4,7 +4,7 @@ CS:GO EXTERNAL CHEAT ( Console app)
 
 * Template (RPM, WPM)
 * Typedef Vector
-* Thread to read memory
+* Threads
 
 
 Threads:
