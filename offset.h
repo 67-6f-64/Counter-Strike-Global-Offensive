@@ -9,6 +9,7 @@ struct Entity
 	//localPlayer
 	DWORD localPlayer = 0xA77D2C;
 	DWORD iCrossHairID = 0x2410;
+	DWORD forceAttack = 0x2E8BCE4;
 
 	//entity
 	DWORD entityBase = 0x4A19D84;
