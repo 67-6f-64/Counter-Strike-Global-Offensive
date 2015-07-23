@@ -14,6 +14,7 @@ a) ReadMemory:
 * entityLoop: Health, Team, Flags, vecPos(x,y,z), entityID;
 
 b) Triggerbot:  based in team and crosshairId
+* Tested with net_faklag 40 (90 in net_graph) and seens work fast yet
 
 
 Work in progress
