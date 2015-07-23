@@ -7,21 +7,24 @@ Memory::Memory()
 	std::cout << "Searching Counter-Strike: Global Offensive..." << std::endl << std::endl;
 	do
 	{
+		//find window of game "Counter-Strike: Global Offsenfive, you can use "Valve001" in className
 		gameHwnd = FindWindow(NULL, "Counter-Strike: Global Offensive");
 		Sleep(16);
 	} while (gameHwnd == NULL);
+
 	system("cls");
+
 	std::cout << "Game Found! Working..." << std::endl << std::endl;
 
 	if (!proc)
-	{
-		gameHwnd = FindWindow(NULL, "Counter-Strike: Global Offensive");		
-		GetWindowThreadProcessId(gameHwnd, &gamePID); 		
-		proc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, gamePID); //need change PROCESS_ALL_ACCELL to read only
+	{				
+		GetWindowThreadProcessId(gameHwnd, &gamePID); // get gameHwnd PID		
+		proc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, gamePID); //need change PROCESS_ALL_ACCELL to read only, needed to readmemory
 	}		
 	
-	clientDll = Module("client.dll", gamePID);
-	engineDll = Module("engine.dll", gamePID);
+	clientDll = Module("client.dll", gamePID); // get client.dll module address
+	engineDll = Module("engine.dll", gamePID); // get engine.dll module address
+
 	std::cout << "-----------GENERAL INFO---------------------------------------------" << std::endl;
 	std::cout << "Game Hwnd: " << gameHwnd << " gamePID: " << gamePID << " Handle: " << proc << std::endl << std::endl;	
 }
@@ -37,59 +40,114 @@ Memory::~Memory()
 	}
 	if (proc)
 		CloseHandle(proc);
+	if (reading)
+		reading = false;
 }
 
-DWORD Memory::GetlocalPlayer()
-{
+
+/*
+
+localPlayer function
+You can get:
+health, team, flags, position, crosshair, index
+
+*/
+
+DWORD Memory::GetlocalPlayer() //address of localPlayer
+{	
 	localPlayerBase = RPM<DWORD>(proc, (GetClientDll() + entity.localPlayer), sizeof(DWORD));
 	return localPlayerBase;
 }
 
-DWORD Memory::GetEntity()
-{
-	entityLoop = RPM<DWORD>(proc, (GetClientDll() + entity.entityBase), sizeof(DWORD));
-	return entityLoop;
-}
-
-int Memory::GetmyHealth()
+int Memory::GetmyHealth() //int with localPlayer health
 {
 	health = RPM<int>(proc, (GetlocalPlayer() + entity.ihealth), sizeof(int));
 	return health;
 }
 
-int Memory::GetmyTeam()
+int Memory::GetmyTeam() //int with localPlayer team
 {
 	team = RPM<int>(proc, (GetlocalPlayer() + entity.iTeam), sizeof(int));
 	return team;
 }
 
-int Memory::GetmyFlags()
+int Memory::GetmyFlags() //int with localPlayer flags, jump, crounch etc
 {
 	flags = RPM<int>(proc, (GetlocalPlayer() + entity.fFlags), sizeof(int));
 	return flags;
 }
 
-Vector Memory::GetmyPos()
+int Memory::GetmyCrossId() //int with localPlayer crosshair id
+{
+	crossId = RPM<int>(proc, (GetlocalPlayer() + entity.iCrossHairID), sizeof(int));
+	return crossId;
+}
+
+int Memory::GetmyId() //int with localPlayer index id
+{
+	index = RPM<int>(proc, (GetlocalPlayer() + entity.index), sizeof(int));
+	return index;
+}
+
+Vector Memory::GetmyPos() //vector with localPlayer position x, y, z
 {
 	myPos = RPM<Vector>(proc, (GetlocalPlayer() + entity.vecOrigin), sizeof(Vector));
 	return myPos;
 }
 
-DWORD Memory::GetClientDll()
+/*
+
+entity function
+You can get:
+health, team, flags, position, index
+
+*/
+
+int Memory::GetEntHealth(DWORD entAddress)//get data health
+{
+	ehealth = RPM<int>(proc, (entAddress + entity.ihealth), sizeof(int));
+	return ehealth;
+}
+
+int Memory::GetEntTeam(DWORD entAddress) //get data team
+{
+	eteam = RPM<int>(proc, (entAddress + entity.iTeam), sizeof(int));
+	return eteam;
+}
+
+int Memory::GetEntFlags(DWORD entAddress) //get data Flags
+{
+	eflags = RPM<int>(proc, (entAddress + entity.fFlags), sizeof(int));
+	return eflags;
+}
+
+int Memory::GetEntId(DWORD entAddress) // get data index
+{
+	eindex = RPM<int>(proc, (entAddress + entity.index), sizeof(int));
+	return eindex;
+}
+
+Vector Memory::GetEntPos(DWORD entAddress) //get data pos: x, y, z
+{
+	ePos = RPM<Vector>(proc, (entAddress + entity.vecOrigin), sizeof(Vector));
+	return ePos;
+}
+
+DWORD Memory::GetClientDll() //client.dll 
 {
 	if (clientDll != NULL)
 		return clientDll;
 	return 0;
 }
 
-DWORD Memory::GetEngineDll()
+DWORD Memory::GetEngineDll() //engine.dll
 {
 	if (engineDll != NULL)
 		return engineDll;
 	return 0;
 }
 
-DWORD Memory::Module(LPCSTR moduleName, DWORD pId)
+DWORD Memory::Module(LPCSTR moduleName, DWORD pId) //function to get module address csgo.exe/client.dll/engine.dll/xxx.dll with pid
 {
 	HANDLE hSnapShot = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, pId);
 	MODULEENTRY32  allinfo;
