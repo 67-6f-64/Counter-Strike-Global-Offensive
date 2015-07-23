@@ -15,9 +15,9 @@ b) entityLoop: Health, Team, Flags, vecPos(x,y,z), entityID;
 
 Threads:
 
-a) ReadMemory locaPlayer and enemyEntitys
+a) ReadMemory:  locaPlayer and enemyEntitys
 
-b) Trigger bot based in team and crosshairId
+b) Triggerbot:  based in team and crosshairId
 
 
 Work in progress
