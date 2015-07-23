@@ -13,6 +13,12 @@ a) localPlayer: Health, Team, Flags, vecPos(x,y,z), crosshairId, playerID;
 
 b) entityLoop: Health, Team, Flags, vecPos(x,y,z), entityID;
 
+Threads:
+
+a) ReadMemory locaPlayer and enemyEntitys
+
+b) Trigger bot based in team and crosshairId
+
 
 Work in progress
 
