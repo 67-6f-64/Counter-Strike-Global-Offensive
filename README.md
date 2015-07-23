@@ -17,7 +17,7 @@ b) Triggerbot:  based in team and crosshairId
 * Tested with net_faklag 40 (90 in net_graph) and seens work fast yet
 
 
-Work in progress
+Work in progress: i will update it alot
 
 * Visual Studio Community 2013 Update 5
 * C++
