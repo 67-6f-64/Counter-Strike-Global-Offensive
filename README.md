@@ -19,3 +19,6 @@ b) entityLoop
 
 
 Working in progress
+
+* Visual Studio 2013 Update 5
+* C++
