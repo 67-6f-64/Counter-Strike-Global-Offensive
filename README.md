@@ -4,14 +4,14 @@ CS:GO EXTERNAL CHEAT ( Console app)
 
 * Template (RPM, WPM)
 * Typedef Vector
+* Thread to read memory
 
 
 ReadMemory:
 
-a) localPlayer: Health, Team, Flags, vecPos(x,y,z)
+a) localPlayer: Health, Team, Flags, vecPos(x,y,z), crosshairId
 
-b) entityLoop
-
+b) entityLoop: Health, Team, Flags, vecPos(x,y,z)
 
 
 Working in progress
