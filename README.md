@@ -14,7 +14,7 @@ a) localPlayer: Health, Team, Flags, vecPos(x,y,z), crosshairId, playerID;
 b) entityLoop: Health, Team, Flags, vecPos(x,y,z), entityID;
 
 
-Working in progress
+Work in progress
 
 * Visual Studio Community 2013 Update 5
 * C++
