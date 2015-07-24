@@ -33,17 +33,24 @@ Memory::Memory()
 //destructor where we set NULL to clientDll and engineDll and CloseHandle of OpenProcess 
 Memory::~Memory()
 {
+	//shoutdown threads
+	if (aim)
+		aim = false;
+
+	if (reading)
+		reading = false;
+
+	if (trigger && !Wpm)
+		trigger = false;
+
 	if (clientDll && engineDll)
 	{
 		clientDll = NULL;
 		engineDll = NULL;
-	}
+	}	
+
 	if (proc)
 		CloseHandle(proc);
-	if (reading)
-		reading = false;
-	if (trigger)
-		trigger = false;
 }
 
 
@@ -97,6 +104,18 @@ Vector Memory::GetmyPos() //vector with localPlayer position x, y, z
 	return myPos;
 }
 
+Vector Memory::GetmyaPunch()
+{
+	aPunch = RPM<Vector>(proc, (GetlocalPlayer() + entity.vecPunch), sizeof(Vector));
+	return aPunch;
+}
+
+Vector Memory::GetmyViewangle()
+{
+	myViewangle = RPM<Vector>(proc, (GetlocalPlayer() + entity.viewAngle), sizeof(Vector));
+	return myViewangle;
+}
+
 /*
 
 entity function
@@ -133,6 +152,30 @@ Vector Memory::GetEntPos(DWORD entAddress) //get data pos: x, y, z
 {
 	ePos = RPM<Vector>(proc, (entAddress + entity.vecOrigin), sizeof(Vector));
 	return ePos;
+}
+
+bool Memory::GetEntDormant(DWORD entAddress)
+{
+	eDormant = RPM<bool>(proc, (entAddress + entity.dormant), sizeof(bool));
+	return eDormant;
+}
+
+Vector Memory::GetEntbonePos(DWORD entAddress)
+{
+	bonePos = RPM<Vector>(proc, (entAddress + entity.boneMatrix), sizeof(Vector));
+	return bonePos;
+}
+
+/*
+
+ENGINE
+
+*/
+
+DWORD Memory::GetEngPointer()
+{
+	enginePointer = RPM<DWORD>(proc, (engineDll + entity.engineBase), sizeof(DWORD));
+	return enginePointer;
 }
 
 DWORD Memory::GetClientDll() //client.dll 
