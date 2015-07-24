@@ -19,6 +19,7 @@ b) Triggerbot (my own code):  based in team and crosshairId
 
 c) Aimbot (my own code): based in target distance
 * Not working correctly with high pings, possibly fix remove crossId check
+* Need fix, not working correctly at all.
 
 
 Work in progress: i will update it alot
