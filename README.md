@@ -9,7 +9,7 @@ CS:GO EXTERNAL CHEAT ( Console app)
 
 Threads:
 
-a) ReadMemory:  
+a) ReadMemory (every 5000 ms):  
 * localPlayer: Health, Team, Flags, vecPos(x,y,z), crosshairId, playerID;
 * entityLoop: Health, Team, Flags, vecPos(x,y,z), entityID;
 
