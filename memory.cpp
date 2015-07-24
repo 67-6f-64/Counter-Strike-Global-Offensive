@@ -12,8 +12,6 @@ Memory::Memory()
 		Sleep(16);
 	} while (gameHwnd == NULL);
 
-	system("cls");
-
 	std::cout << "Game Found! Working..." << std::endl << std::endl;
 
 	if (!proc)
@@ -22,8 +20,13 @@ Memory::Memory()
 		proc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, gamePID); //need change PROCESS_ALL_ACCELL to read only, needed to readmemory
 	}		
 	
-	clientDll = Module("client.dll", gamePID); // get client.dll module address
-	engineDll = Module("engine.dll", gamePID); // get engine.dll module address
+	do
+	{
+		clientDll = Module("client.dll", gamePID); // get client.dll module address
+		engineDll = Module("engine.dll", gamePID); // get engine.dll module address
+		Sleep(16);
+	} while (!clientDll || !engineDll);
+	
 
 	std::cout << "-----------GENERAL INFO---------------------------------------------" << std::endl;
 	std::cout << "Game Hwnd: " << gameHwnd << " gamePID: " << gamePID << " Handle: " << proc << std::endl << std::endl;	
@@ -43,11 +46,14 @@ Memory::~Memory()
 	if (trigger && !Wpm)
 		trigger = false;
 
+	if (noflash)
+		noflash = false;
+
 	if (clientDll && engineDll)
 	{
 		clientDll = NULL;
 		engineDll = NULL;
-	}	
+	}
 
 	if (proc)
 		CloseHandle(proc);
@@ -176,6 +182,24 @@ DWORD Memory::GetEngPointer()
 {
 	enginePointer = RPM<DWORD>(proc, (engineDll + entity.engineBase), sizeof(DWORD));
 	return enginePointer;
+}
+
+/*
+
+FLASH
+
+*/
+
+float Memory::GetflashDuration()
+{
+	flashDurantion = RPM<float>(proc, (clientDll + entity.flFlashDuration), sizeof(float));
+	return flashDurantion;
+}
+
+float Memory::GetFlashColor()
+{
+	flashColor = RPM<float>(proc, (clientDll + entity.flFlashMaxAlpha), sizeof(float));
+	return flashColor;
 }
 
 DWORD Memory::GetClientDll() //client.dll 
