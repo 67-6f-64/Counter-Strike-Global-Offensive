@@ -6,6 +6,45 @@
 Memory memory;
 
 
+void Memory::StartNoFlash()
+{
+	HANDLE start = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)NoFlash, NULL, 0, NULL);
+}
+
+DWORD Memory::NoFlash(LPVOID lParam)
+{
+	memory.noflash = true;
+	DWORD localPlayer = RPM<DWORD>(memory.proc, (memory.clientDll + entity.localPlayer), sizeof(DWORD));
+	while (true)
+	{
+
+		
+		if (memory.GetFlashColor() > 0.0f && memory.GetFlashColor() != 0.0f)
+		{
+			float newFlashColor = 0.0f;
+			WPM<float>(memory.proc, (localPlayer + entity.flFlashMaxAlpha), newFlashColor);
+		}
+
+
+		if (!memory.noflash)
+		{
+			if (memory.GetFlashColor() == 0.0f && memory.GetFlashColor() != 255.0f)
+			{
+				float newFlashColor = 255.0f;
+				WPM<float>(memory.proc, (localPlayer + entity.flFlashMaxAlpha), newFlashColor);
+			}
+			break;
+		}		
+		
+
+		Sleep(16);
+	}
+
+
+	return 0;
+}
+
+
 void Memory::StartAim()
 {
 	HANDLE start = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Aim, NULL, 0, NULL);
@@ -144,14 +183,18 @@ DWORD Memory::Trigger(LPVOID lParam)
 			{	//b.2)	
 				if (memory.GetEntId(enemys[i]) == memory.GetmyCrossId() && memory.GetEntHealth(enemys[i]) > 0) //entity id is equal to our crosshairId?
 				{
-					//b.3) shoot: write to the memory +attack / -attack
-					memory.Wpm = true;
-					Sleep(25);
-					WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 5);
-					Sleep(25); //need to find best sleep
-					WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 4);
-					Sleep(70);//maybe add a Sleep here too.
-					memory.Wpm = false;
+					//added punch test to not shoot like idiot
+					if (!memory.aim && memory.GetmyaPunch().x < 0.1f)
+					{
+						//b.3) shoot: write to the memory +attack / -attack
+						memory.Wpm = true;
+						Sleep(25);
+						WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 5);
+						Sleep(25); //need to find best sleep
+						WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 4);
+						Sleep(70);//maybe add a Sleep here too.
+						memory.Wpm = false;
+					}					
 				}
 			}
 		}
