@@ -19,7 +19,7 @@ b) Triggerbot (my own code):  based in team and crosshairId
 * Tweaked punch check
 
 c) Aimbot (my own code): based in target distance
-* Fixed high ping problem, not perfect yet
+* Fixed high ping problem, not perfect yet (ping 90 seens fast now)
 * Tweaked punch check and added check to no conflict with triggerbot together
 
 d) Noflash: based in color
