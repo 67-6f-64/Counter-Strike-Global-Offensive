@@ -8,12 +8,13 @@ Memory memory;
 
 void Memory::StartNoFlash()
 {
-	HANDLE start = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)NoFlash, NULL, 0, NULL);
+	snF = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)NoFlash, NULL, 0, NULL);
+	memory.noflash = true;
 }
 
 DWORD Memory::NoFlash(LPVOID lParam)
 {
-	memory.noflash = true;
+	
 	DWORD localPlayer = RPM<DWORD>(memory.proc, (memory.clientDll + entity.localPlayer), sizeof(DWORD));
 	while (true)
 	{
@@ -46,8 +47,9 @@ DWORD Memory::NoFlash(LPVOID lParam)
 
 
 void Memory::StartAim()
-{
-	HANDLE start = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Aim, NULL, 0, NULL);
+{	
+	sA = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Aim, NULL, 0, NULL);
+	aim = true;
 }
 
 /*
@@ -55,7 +57,7 @@ MY AIMBOT LOGIC, you can find other in UC forum, don't forget to credit if using
 */
 DWORD Memory::Aim(LPVOID lpParam)
 {
-	memory.aim = true;
+	
 	int targets = 0; //number of targets
 	int distance = 100; //start value to check distance
 	Vector angle; //angle to write to target heads 
@@ -103,7 +105,7 @@ DWORD Memory::Aim(LPVOID lpParam)
 				WPM<Vector>(memory.proc, (memory.GetEngPointer() + entity.viewAngle), angle);
 
 				//now to shoot we check vPunch, well we don't want to shoot like retards
-				if (memory.GetmyaPunch().x == 0.f)
+				if (memory.GetmyaPunch().x == 0.f && ! memory.trigger)
 				{
 					WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 5);
 					Sleep(25); //need to find better sleep
@@ -123,8 +125,8 @@ DWORD Memory::Aim(LPVOID lpParam)
 
 		
 
-		if (!memory.aim)
-			break;
+		//if (!memory.aim)
+		//	break;
 
 		Sleep(1);
 	}
@@ -133,7 +135,9 @@ DWORD Memory::Aim(LPVOID lpParam)
 
 void Memory::StartTrigger()
 {
-	HANDLE start = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Trigger, NULL, 0, NULL);
+	
+	sT = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Trigger, NULL, 0, NULL);
+	memory.trigger = true;
 }
 
 /*THIS TRIGGER ONLY WORKS AFTER ALL ENEMYS JOIN THE ENEMY TEAM/IF you change team and a new target join it works too.
@@ -148,12 +152,16 @@ b.3) shoot
 IF YOU WANT TO USE PUT CREDITS ty
 */
 DWORD Memory::Trigger(LPVOID lParam)
-{
-	memory.trigger = true;
+{	
 	std::vector<DWORD> enemys;
 	int oldTeam = 9; //random number, can't be 1,2,3 these are spec tr and ct
 	while (true)
 	{
+
+		//to stop thread set memory.thread to false
+		if (!memory.trigger)
+			break;
+
 		//a)
 		if (memory.GetmyTeam() != oldTeam)
 		{
@@ -199,10 +207,6 @@ DWORD Memory::Trigger(LPVOID lParam)
 			}
 		}
 
-		//to stop thread set memory.thread to false
-		if (!memory.trigger)
-			break;
-
 		Sleep(16);//Sleep(1) is overkill
 	}
 
@@ -211,7 +215,7 @@ DWORD Memory::Trigger(LPVOID lParam)
 
 void Memory::StartReadMemory() //call this function to start ReadMemory thread
 {
-	HANDLE start = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ReadMemory, NULL, 0, NULL);
+	sRM = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ReadMemory, NULL, 0, NULL);
 }
 
 DWORD Memory::ReadMemory(LPVOID lParam) // thread: ReadMemory where we get data from memory's game
