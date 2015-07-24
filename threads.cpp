@@ -18,7 +18,7 @@ DWORD Memory::NoFlash(LPVOID lParam)
 	while (true)
 	{
 
-		
+
 		if (memory.GetFlashColor() > 0.0f && memory.GetFlashColor() != 0.0f)
 		{
 			float newFlashColor = 0.0f;
@@ -34,8 +34,8 @@ DWORD Memory::NoFlash(LPVOID lParam)
 				WPM<float>(memory.proc, (localPlayer + entity.flFlashMaxAlpha), newFlashColor);
 			}
 			break;
-		}		
-		
+		}
+
 
 		Sleep(16);
 	}
@@ -56,16 +56,17 @@ MY AIMBOT LOGIC, you can find other in UC forum, don't forget to credit if using
 DWORD Memory::Aim(LPVOID lpParam)
 {
 	memory.aim = true;
-	int targets = 0;
-	int oldTeam = 0;
-	int distance = 100;
-	Vector angle;
+	int targets = 0; //number of targets
+	int distance = 100; //start value to check distance
+	Vector angle; //angle to write to target heads 
 
 	while (true)
 	{
 
-		if (GetAsyncKeyState(0x46))
+		if (GetAsyncKeyState(0x46)) //just to test 'F'
 		{
+			/*				FIND CLOSETS TARGET				*/
+
 			for (int i = 0; i < 64; ++i) //loop to get enemy's
 			{
 				memory.entityLoop = RPM<DWORD>(memory.proc, ((memory.clientDll + entity.entityBase) + ((i - 1)*entity.loopDistance)), sizeof(DWORD));
@@ -74,22 +75,27 @@ DWORD Memory::Aim(LPVOID lpParam)
 					continue;
 
 				//check for varius things
-				if (memory.GetEntDormant(memory.entityLoop) || memory.GetEntTeam(memory.entityLoop) == 0
+				if (memory.GetEntDormant(memory.entityLoop) && memory.GetEntTeam(memory.entityLoop) == 0
 					|| memory.GetEntTeam(memory.entityLoop) == memory.GetmyTeam() || memory.GetEntHealth(memory.entityLoop) == 0)
 					continue;
 
-				//find closest target - 10 is bone head 2 is cheast
-				if (memory.Distance(memory.GetmyPos(), memory.BonePos(memory.entityLoop, entity.boneMatrix, 10), true) < distance)
+				//dist myPos and targetHead - 10 is head, 2 is cheast
+				Vector mPos = memory.GetmyPos();
+				Vector boneP = memory.BonePos(memory.entityLoop, entity.boneMatrix, 10);
+				int dist = (int)memory.Distance(mPos, boneP, true);
+
+				//find closest target
+				if (dist < distance)
 				{
-					distance = (int)memory.Distance(memory.GetmyPos(), memory.BonePos(memory.entityLoop, entity.boneMatrix, 10), true);
-					angle = memory.CalcAngle(memory.GetmyPos(), memory.BonePos(memory.entityLoop, entity.boneMatrix, 10));
+					distance = dist;
+					angle = memory.CalcAngle(mPos, boneP);
 					targets++;
 				}
-
 			}
-						
 
-			if (targets > 0) // just a overcheck if have targets and press 'F'
+			/* WE HAVE A TARGET LETS SET ANGLE AND SHOOT */
+
+			if (targets > 0) // we have a target?
 			{
 				//First we write viewangle to target'head position
 				memory.ClampAngle(angle);
@@ -97,24 +103,17 @@ DWORD Memory::Aim(LPVOID lpParam)
 				WPM<Vector>(memory.proc, (memory.GetEngPointer() + entity.viewAngle), angle);
 
 				//now to shoot we check vPunch, well we don't want to shoot like retards
-				if (memory.GetmyaPunch().x == 0.0f && memory.GetmyCrossId() != 0)
+				if (memory.GetmyaPunch().x == 0.f)
 				{
 					WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 5);
-					Sleep(25); //need to find best sleep
+					Sleep(25); //need to find better sleep
 					WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 4);
-					Sleep(70);//maybe add a Sleep here too.
-					//wee shoot but we need to reset distance to find next
-					distance = 100;	
-					targets = 0;
 				}
 			}
 
-			if (targets == 0)
-			{
-				distance = 100;
-				targets = 0;
-			}
-
+			//after everything, reset to find new target
+			distance = 100;
+			targets = 0;
 		}
 		else
 		{
@@ -146,12 +145,13 @@ b) Check is we are in same team yet
 b.1) Loop only valid targets
 b.2) loop target and check crosshair id and target id and target's health
 b.3) shoot
+IF YOU WANT TO USE PUT CREDITS ty
 */
 DWORD Memory::Trigger(LPVOID lParam)
 {
 	memory.trigger = true;
 	std::vector<DWORD> enemys;
-	int oldTeam = 0;
+	int oldTeam = 9; //random number, can't be 1,2,3 these are spec tr and ct
 	while (true)
 	{
 		//a)
@@ -194,7 +194,7 @@ DWORD Memory::Trigger(LPVOID lParam)
 						WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 4);
 						Sleep(70);//maybe add a Sleep here too.
 						memory.Wpm = false;
-					}					
+					}
 				}
 			}
 		}
@@ -250,6 +250,14 @@ DWORD Memory::ReadMemory(LPVOID lParam) // thread: ReadMemory where we get data 
 					<< " Y: " << memory.GetEntPos(memory.entityLoop).y
 					<< " Z: " << memory.GetEntPos(memory.entityLoop).z << std::endl << std::endl;
 			}
+		}
+
+		if (GetAsyncKeyState(VK_ESCAPE))
+		{
+			memory.reading = false;
+			system("pause");
+			ExitProcess(0);
+			break;
 		}
 
 		if (!memory.reading)
