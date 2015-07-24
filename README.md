@@ -15,13 +15,12 @@ a) ReadMemory (every 5000 ms):
 
 b) Triggerbot (my own code):  based in team and crosshairId
 * Tested with net_faklag 40 (90 in net_graph) and seens work fast yet
-* WriteProcessMemory to shoot: need to fix delays but it's working nice already.
 * Added punch.x test to shoot again. And aimbot check to not shoot together.
+* Tweaked punch check
 
 c) Aimbot (my own code): based in target distance
-* Not working correctly with high pings, possibly fix remove crossId check
-* Need to make work faster with high ping > 80
-* note: after fix client.dll addres seens like it's working normally now, need test more
+* Fixed high ping problem, not perfect yet
+* Tweaked punch check and added check to no conflict with triggerbot together
 
 d) Noflash: based in color
 
