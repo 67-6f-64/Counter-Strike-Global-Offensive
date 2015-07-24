@@ -41,6 +41,11 @@ public:
 	Vector BonePos(DWORD target, DWORD address, int boneId);
 	Vector CalcAngle(Vector& src, Vector& dst);
 	void ClampAngle(Vector &angles);
+
+	//thread no flash
+	bool noflash = false;
+	void StartNoFlash();
+	static DWORD NoFlash(LPVOID lParam);
 	
 	DWORD Module(LPCSTR moduleName, DWORD pId); //module address's .exe .dll
 	DWORD GetClientDll(); //client.dll
@@ -69,6 +74,10 @@ public:
 
 	//engine
 	DWORD GetEngPointer();
+
+	//flash
+	float GetflashDuration();
+	float GetFlashColor();
 
 protected:
 	HWND gameHwnd;
@@ -102,6 +111,10 @@ protected:
 	Vector aPunch;
 	Vector oldAngle;
 	DWORD enginePointer;
+
+	//flash
+	float flashDurantion = 0;
+	float flashColor = 0;
 };
 
 //ReadProcessMemory template
