@@ -5,28 +5,35 @@ Entity entity;
 
 Memory* mem = new Memory(); //create new object of memory class
 
+int Menu();
+
 int Menu()
 {
-	int option = 0;	
-	std::cout << "MENU: choose a number and type [ENTER]"						<< std::endl;
-	std::cout << "(1) Only Read Memory "					<< mem->reading		<< std::endl;
-	std::cout << "(2) TriggerBot inCrossHairId "			<< mem->trigger		<< std::endl;
-	std::cout << "(3) Aimbot (No Vish Check yet) "			<< mem->aim			<< std::endl;
-	std::cout << "(4) Remove Flash "						<< mem->noflash		<< std::endl;
+	int option = 0;		
+	std::cout << "MENU: choose a number and type [ENTER] (1 = ON / 0 = OFF)"<< std::endl;
+	std::cout << "(1) Only Read Memory "			<< mem->reading	<< std::endl;
+	std::cout << "(2) TriggerBot inCrossHairId "	<< mem->trigger	<< std::endl;
+	std::cout << "(3) Aimbot (No Vish Check yet) "	<< mem->aim	<< std::endl;
+	std::cout << "(4) Remove Flash "				<< mem->noflash	<< std::endl;
 	std::cout << "(0) EXIT" << std::endl;
 	std::cin >> option;
 	switch (option)
 	{
 	case 1:			
 		if (!mem->reading){
-			mem->StartReadMemory();
 			mem->reading = true;
+			mem->StartReadMemory();			
 		}
 		else
-			mem->reading = false;
+		{
+			TerminateThread(mem->sRM, 0);
+			mem->reading = false;			
+		}
+			
 		system("cls");
 		Menu();
 		break;
+
 	case 2:			
 		if (!mem->trigger)
 		{
@@ -34,17 +41,27 @@ int Menu()
 			mem->trigger = true;
 		}
 		else
+		{		
+			TerminateThread(mem->sT, 0);
 			mem->trigger = false;
+		}
+
 		system("cls");
 		Menu();
 		break;
+
 	case 3:
-		if (!mem->aim){
+		if (!mem->aim)
+		{
 			mem->StartAim();
 			mem->aim = true;
 		}
 		else
+		{
+			TerminateThread(mem->sA, 0);
 			mem->aim = false;
+		}
+			
 		system("cls");
 		Menu();
 		break;
@@ -55,7 +72,11 @@ int Menu()
 			mem->noflash = true;
 		}
 		else
+		{
+			TerminateThread(mem->snF, 0);
 			mem->noflash = false;
+		}
+			
 		system("cls");
 		Menu();
 		break;
@@ -76,9 +97,6 @@ int main()
 	system("Color 1B");
 
 	// to get health use mem->GetHealth() e.g
-
-	std::cout << "-----------ADDRESS'S CLIENT.DLL ENGINE.DL----------------------------" << std::endl;
-	std::cout << "client.dll: " << mem->GetClientDll() << " engine.dll: " << mem->GetEngineDll() << std::endl << std::endl;
 
 	Menu();
 
