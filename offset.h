@@ -14,6 +14,7 @@ struct Entity
 	//entity
 	DWORD entityBase = 0x4A19D84;
 	DWORD loopDistance = 0x10;
+	DWORD dormant = 0xE9;
 
 	//comuns
 	DWORD index = 0x64;
@@ -21,6 +22,13 @@ struct Entity
 	DWORD iTeam = 0xF0;
 	DWORD fFlags = 0x100;
 	DWORD vecOrigin = 0x134;
+	DWORD boneMatrix = 0xA78;
+
+	//aimbot
+	DWORD shotsFired = 0x1D6C;
+	DWORD viewAngle = 0x4CE0;
+	DWORD vecPunch = 0x13E8;
+	DWORD engineBase = 0x5D2284;
 };
 
 extern Entity entity;
