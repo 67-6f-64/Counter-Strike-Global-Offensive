@@ -9,9 +9,10 @@ int Menu()
 {
 	int option = 0;
 	system("cls");
-	std::cout << "MENU: choose a number and type [ENTER]" << std::endl;
-	std::cout << "(1) Only Read Memory " << mem->reading <<std::endl;
-	std::cout << "(2) TriggerBot inCrossHairId " << mem->trigger << std::endl;
+	std::cout << "MENU: choose a number and type [ENTER]"						<< std::endl;
+	std::cout << "(1) Only Read Memory "					<< mem->reading		<< std::endl;
+	std::cout << "(2) TriggerBot inCrossHairId "			<< mem->trigger		<< std::endl;
+	std::cout << "(3) Aimbot (No Vish Check yet) "			<< mem->aim			<< std::endl;
 
 	std::cout << "(0) EXIT" << std::endl;
 	std::cin >> option;
@@ -31,7 +32,14 @@ int Menu()
 			mem->trigger = true;
 		}							
 		Menu();
-		break;		
+		break;
+	case 3:
+		if (!mem->aim){
+			mem->StartAim();
+			mem->aim = true;
+		}
+		Menu();
+		break;
 	case 0:
 		delete mem;
 		ExitProcess(0);
@@ -40,6 +48,8 @@ int Menu()
 		Menu();
 		break;
 	}
+
+	return 0;
 }
 
 int main()
