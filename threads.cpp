@@ -1,15 +1,106 @@
 #include "main.h"
 #include "offset.h"
 
+
 //since our thread is a static one inside a class we need to call the class object here to access functions
 Memory memory;
+
+
+void Memory::StartAim()
+{
+	HANDLE start = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Aim, NULL, 0, NULL);
+}
+
+/*
+MY AIMBOT LOGIC, you can find other in UC forum, don't forget to credit if using
+*/
+DWORD Memory::Aim(LPVOID lpParam)
+{
+	memory.aim = true;
+	int targets = 0;
+	int oldTeam = 0;
+	int distance = 100;
+	Vector angle;
+
+	while (true)
+	{
+
+		if (GetAsyncKeyState(0x46))
+		{
+			for (int i = 0; i < 64; ++i) //loop to get enemy's
+			{
+				memory.entityLoop = RPM<DWORD>(memory.proc, ((memory.clientDll + entity.entityBase) + ((i - 1)*entity.loopDistance)), sizeof(DWORD));
+
+				if (memory.entityLoop == NULL) //if entity is not valid
+					continue;
+
+				//check for varius things
+				if (memory.GetEntDormant(memory.entityLoop) || memory.GetEntTeam(memory.entityLoop) == 0
+					|| memory.GetEntTeam(memory.entityLoop) == memory.GetmyTeam() || memory.GetEntHealth(memory.entityLoop) == 0)
+					continue;
+
+				//find closest target - 10 is bone head 2 is cheast
+				if (memory.Distance(memory.GetmyPos(), memory.BonePos(memory.entityLoop, entity.boneMatrix, 10), true) < distance)
+				{
+					distance = (int)memory.Distance(memory.GetmyPos(), memory.BonePos(memory.entityLoop, entity.boneMatrix, 10), true);
+					angle = memory.CalcAngle(memory.GetmyPos(), memory.BonePos(memory.entityLoop, entity.boneMatrix, 10));
+					targets++;
+				}
+
+			}
+						
+
+			if (targets > 0) // just a overcheck if have targets and press 'F'
+			{
+				//First we write viewangle to target'head position
+				memory.ClampAngle(angle);
+
+				WPM<Vector>(memory.proc, (memory.GetEngPointer() + entity.viewAngle), angle);
+
+				//now to shoot we check vPunch, well we don't want to shoot like retards
+				if (memory.GetmyaPunch().x == 0.0f && memory.GetmyCrossId() != 0)
+				{
+					WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 5);
+					Sleep(25); //need to find best sleep
+					WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 4);
+					Sleep(70);//maybe add a Sleep here too.
+					//wee shoot but we need to reset distance to find next
+					distance = 100;	
+					targets = 0;
+				}
+			}
+
+			if (targets == 0)
+			{
+				distance = 100;
+				targets = 0;
+			}
+
+		}
+		else
+		{
+			distance = 100;
+			targets = 0;
+		}
+
+		
+
+		if (!memory.aim)
+			break;
+
+		Sleep(1);
+	}
+	return 0;
+}
 
 void Memory::StartTrigger()
 {
 	HANDLE start = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Trigger, NULL, 0, NULL);
 }
 
-/*THIS TRIGGER ONLY WORKS AFTER ALL ENEMYS JOIN THE ENEMY TEAM
+/*THIS TRIGGER ONLY WORKS AFTER ALL ENEMYS JOIN THE ENEMY TEAM/IF you change team and a new target join it works too.
+SO THIS A TRIGGER BOT FOR MM VERSION or you can wait everybody join and join after
+* looking for a solution at thi moment: case same team and enter new target in other team, how update it?
 a) Check teams
 a.1) Create list of targets checking vaid entity an team
 b) Check is we are in same team yet
@@ -25,7 +116,7 @@ DWORD Memory::Trigger(LPVOID lParam)
 	while (true)
 	{
 		//a)
-		if (memory.GetmyTeam() != oldTeam) 
+		if (memory.GetmyTeam() != oldTeam)
 		{
 			oldTeam = memory.GetmyTeam(); // since we are in a differnt team set the old to actual
 
@@ -34,9 +125,9 @@ DWORD Memory::Trigger(LPVOID lParam)
 			for (int i = 0; i < 64; ++i) //loop to get enemy's
 			{
 				memory.entityLoop = RPM<DWORD>(memory.proc, ((memory.clientDll + entity.entityBase) + ((i - 1)*entity.loopDistance)), sizeof(DWORD));
-				
+
 				if (memory.entityLoop == NULL) //if entity is not valid
-					continue;				
+					continue;
 
 				if (memory.GetEntTeam(memory.entityLoop) != 0 && memory.eteam != memory.team) //if entity is not 0 and is not our team add to vector
 				{
@@ -59,12 +150,12 @@ DWORD Memory::Trigger(LPVOID lParam)
 					WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 5);
 					Sleep(25); //need to find best sleep
 					WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 4);
-					//maybe add a Sleep here too.
-					memory.Wpm = false;					
+					Sleep(70);//maybe add a Sleep here too.
+					memory.Wpm = false;
 				}
 			}
 		}
-		
+
 		//to stop thread set memory.thread to false
 		if (!memory.trigger)
 			break;
@@ -83,7 +174,7 @@ void Memory::StartReadMemory() //call this function to start ReadMemory thread
 DWORD Memory::ReadMemory(LPVOID lParam) // thread: ReadMemory where we get data from memory's game
 {
 	/*
-	Your can use memori.GetmyHealth() e.g to retreive localPlayer health	
+	Your can use memori.GetmyHealth() e.g to retreive localPlayer health
 	*/
 	memory.reading = true;
 	while (true)
@@ -95,10 +186,10 @@ DWORD Memory::ReadMemory(LPVOID lParam) // thread: ReadMemory where we get data 
 		std::cout << "-> Team: " << memory.GetmyTeam() << std::endl;
 		std::cout << "-> Flags: " << memory.GetmyFlags() << std::endl;
 		std::cout << "-> Crosshair Id: " << memory.GetmyCrossId() << std::endl;
-		std::cout << "-> localPlayer Position X: " << memory.GetmyPos().x 
-			<< " Y: " << memory.GetmyPos().y 
+		std::cout << "-> localPlayer Position X: " << memory.GetmyPos().x
+			<< " Y: " << memory.GetmyPos().y
 			<< " Z: " << memory.GetmyPos().z << std::endl << std::endl;
-		
+
 		/*                      LIST LOCALPLAYER ENEMYS                                  */
 		for (int i = 0; i < 64; i++)
 		{
@@ -112,14 +203,12 @@ DWORD Memory::ReadMemory(LPVOID lParam) // thread: ReadMemory where we get data 
 				std::cout << "-> Health: " << memory.GetEntHealth(memory.entityLoop) << std::endl;
 				std::cout << "-> Team: " << memory.GetEntTeam(memory.entityLoop) << std::endl;
 				std::cout << "-> Flags: " << memory.GetEntFlags(memory.entityLoop) << std::endl;
-				std::cout << "-> Enemy's Position X: " << memory.GetEntPos(memory.entityLoop).x 
-					<< " Y: " << memory.GetEntPos(memory.entityLoop).y 
+				std::cout << "-> Enemy's Position X: " << memory.GetEntPos(memory.entityLoop).x
+					<< " Y: " << memory.GetEntPos(memory.entityLoop).y
 					<< " Z: " << memory.GetEntPos(memory.entityLoop).z << std::endl << std::endl;
 			}
-
 		}
 
-		
 		if (!memory.reading)
 			break;
 
