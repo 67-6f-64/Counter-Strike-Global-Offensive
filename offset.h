@@ -7,12 +7,12 @@
 struct Entity
 {
 	//localPlayer
-	DWORD localPlayer = 0xA77D2C;
+	DWORD localPlayer = 0xA7AFBC;
 	DWORD iCrossHairID = 0x2410;
-	DWORD forceAttack = 0x2E8BCE4;
+	DWORD forceAttack = 0x2E8F2B4;
 
 	//entity
-	DWORD entityBase = 0x4A19D84;
+	DWORD entityBase = 0x4A1D354;
 	DWORD loopDistance = 0x10;
 	DWORD dormant = 0xE9;
 
@@ -28,7 +28,7 @@ struct Entity
 	DWORD shotsFired = 0x1D6C;
 	DWORD viewAngle = 0x4CE0;
 	DWORD vecPunch = 0x13E8;
-	DWORD engineBase = 0x5D2284;
+	DWORD engineBase = 0x5D2294;
 };
 
 extern Entity entity;
