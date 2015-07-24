@@ -13,11 +13,11 @@ a) ReadMemory:
 * localPlayer: Health, Team, Flags, vecPos(x,y,z), crosshairId, playerID;
 * entityLoop: Health, Team, Flags, vecPos(x,y,z), entityID;
 
-b) Triggerbot:  based in team and crosshairId
+b) Triggerbot (my own code):  based in team and crosshairId
 * Tested with net_faklag 40 (90 in net_graph) and seens work fast yet
 * WriteProcessMemory to shoot: need to fix delays but it's working nice already.
 
-c) Aimbot: based in target distance
+c) Aimbot (my own code): based in target distance
 * Not working correctly with high pings, possibly fix remove crossId check
 
 
