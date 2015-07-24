@@ -20,7 +20,7 @@ b) Triggerbot (my own code):  based in team and crosshairId
 
 c) Aimbot (my own code): based in target distance
 * Not working correctly with high pings, possibly fix remove crossId check
-* Need fix, not working correctly at all.
+* Need to make work faster with high ping > 40
 * note: after fix client.dll addres seens like it's working normally now, need test more
 
 d) Noflash: based in color
