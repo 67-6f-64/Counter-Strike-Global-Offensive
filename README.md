@@ -16,6 +16,9 @@ a) ReadMemory:
 b) Triggerbot:  based in team and crosshairId
 * Tested with net_faklag 40 (90 in net_graph) and seens work fast yet
 
+c) Aimbot: based in target distance
+* Not working correctly with high pings, possibly fix remove crossId check
+
 
 Work in progress: i will update it alot
 
