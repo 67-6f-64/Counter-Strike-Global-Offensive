@@ -29,9 +29,19 @@ public:
 
 	//thread triggerbot inCrosshairId 
 	bool trigger = false;
+	bool Wpm = false;
 	void StartTrigger();
 	static DWORD Trigger(LPVOID lParam);
 
+	//thread aimbot no vis check (rage aimbot)
+	bool aim = false;
+	void StartAim();
+	static DWORD Aim(LPVOID lParam);
+	double Distance(Vector a, Vector b, bool metters);
+	Vector BonePos(DWORD target, DWORD address, int boneId);
+	Vector CalcAngle(Vector& src, Vector& dst);
+	void ClampAngle(Vector &angles);
+	
 	DWORD Module(LPCSTR moduleName, DWORD pId); //module address's .exe .dll
 	DWORD GetClientDll(); //client.dll
 	DWORD GetEngineDll(); //engine.dll
@@ -44,14 +54,21 @@ public:
 	int GetmyCrossId(); // get data crossairId
 	int GetmyId(); // get data index
 	Vector GetmyPos(); //get data pos: x, y, z
+	Vector GetmyaPunch();
+	Vector GetmyViewangle();
 
 	//entityLoop functions	
 	int GetEntHealth(DWORD entAddress); //get data health
 	int GetEntTeam(DWORD entAddress); //get data team
 	int GetEntFlags(DWORD entAddress); //get data Flags
 	int GetEntCrossId(DWORD entAddress); // get data crossairId
-	int GetEntId(DWORD entAddress); // get data index	
+	int GetEntId(DWORD entAddress); // get data index
+	bool GetEntDormant(DWORD entAddress); //get data dormant
 	Vector GetEntPos(DWORD entAddress); //get data pos: x, y, z
+	Vector GetEntbonePos(DWORD entAddress);
+
+	//engine
+	DWORD GetEngPointer();
 
 protected:
 	HWND gameHwnd;
@@ -68,6 +85,7 @@ protected:
 	int crossId = 0;
 	int index = 0;
 	Vector myPos;
+	Vector myViewangle;
 
 	//entity
 	DWORD entityLoop;
@@ -76,6 +94,14 @@ protected:
 	int eflags = 0;
 	int eindex = 0;
 	Vector ePos;
+	bool eDormant;
+	Vector bonePos;
+
+	//aimbot
+	int shotsFired;
+	Vector aPunch;
+	Vector oldAngle;
+	DWORD enginePointer;
 };
 
 //ReadProcessMemory template
