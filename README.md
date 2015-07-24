@@ -23,6 +23,7 @@ c) Aimbot (my own code): based in target distance
 * Tweaked punch check and added check to no conflict with triggerbot together
 
 d) Noflash: based in color
+* need fix when turn off
 
 Work in progress: i will update it alot
 
