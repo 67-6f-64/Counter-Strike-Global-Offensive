@@ -24,17 +24,20 @@ public:
 
 	//tread to read memory every 5s
 	bool reading = false;
+	HANDLE sRM;
 	void StartReadMemory();
 	static DWORD ReadMemory(LPVOID lParam);
 
 	//thread triggerbot inCrosshairId 
 	bool trigger = false;
 	bool Wpm = false;
+	HANDLE sT;
 	void StartTrigger();
 	static DWORD Trigger(LPVOID lParam);
 
 	//thread aimbot no vis check (rage aimbot)
 	bool aim = false;
+	HANDLE sA;
 	void StartAim();
 	static DWORD Aim(LPVOID lParam);
 	double Distance(Vector a, Vector b, bool metters);
@@ -44,6 +47,7 @@ public:
 
 	//thread no flash
 	bool noflash = false;
+	HANDLE snF;
 	void StartNoFlash();
 	static DWORD NoFlash(LPVOID lParam);
 	
