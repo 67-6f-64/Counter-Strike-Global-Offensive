@@ -14,7 +14,7 @@ a) ReadMemory (every 5000 ms):
 * entityLoop: Health, Team, Flags, vecPos(x,y,z), entityID;
 
 b) Triggerbot (my own code):  based in team and crosshairId
-* Tested with net_faklag 40 (90 in net_graph) and seens work fast yet
+* Tested with net_fakelag 40 (90 in net_graph) and seens work fast yet
 * Added punch.x test to shoot again. And aimbot check to not shoot together.
 * Tweaked punch check
 
