@@ -29,6 +29,10 @@ struct Entity
 	DWORD viewAngle = 0x4CE0;
 	DWORD vecPunch = 0x13E8;
 	DWORD engineBase = 0x5D2294;
+
+	//noflash client.dll
+	DWORD flFlashDuration = 0x1DB4;
+	DWORD flFlashMaxAlpha = 0x1DB0;
 };
 
 extern Entity entity;
