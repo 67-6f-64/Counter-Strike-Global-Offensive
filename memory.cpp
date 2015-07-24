@@ -26,7 +26,11 @@ Memory::Memory()
 		engineDll = Module("engine.dll", gamePID); // get engine.dll module address
 		Sleep(16);
 	} while (!clientDll || !engineDll);
+
+	system("cls");
 	
+	std::cout << "-----------ADDRESS'S CLIENT.DLL ENGINE.DL----------------------------" << std::endl;
+	std::cout << "client.dll: " << GetClientDll() << " engine.dll: " << GetEngineDll() << std::endl << std::endl;
 
 	std::cout << "-----------GENERAL INFO---------------------------------------------" << std::endl;
 	std::cout << "Game Hwnd: " << gameHwnd << " gamePID: " << gamePID << " Handle: " << proc << std::endl << std::endl;	
