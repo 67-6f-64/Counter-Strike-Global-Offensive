@@ -8,39 +8,36 @@ Memory memory;
 
 void Memory::StartNoFlash()
 {
-	snF = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)NoFlash, NULL, 0, NULL);
 	memory.noflash = true;
+	snF = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)NoFlash, NULL, 0, NULL);
+
 }
 
 DWORD Memory::NoFlash(LPVOID lParam)
 {
 	
 	DWORD localPlayer = RPM<DWORD>(memory.proc, (memory.clientDll + entity.localPlayer), sizeof(DWORD));
-	while (true)
+
+	while (memory.noflash)
 	{
 
+		
 
 		if (memory.GetFlashColor() > 0.0f && memory.GetFlashColor() != 0.0f)
 		{
 			float newFlashColor = 0.0f;
-			WPM<float>(memory.proc, (localPlayer + entity.flFlashMaxAlpha), newFlashColor);
+			WPM<float>(memory.Getproc(), (localPlayer + entity.flFlashMaxAlpha), newFlashColor);
 		}
 
-
-		if (!memory.noflash)
+		
+		if (memory.GetFlashColor() == 0.0f && memory.GetFlashColor() != 255.0f)
 		{
-			if (memory.GetFlashColor() == 0.0f && memory.GetFlashColor() != 255.0f)
-			{
-				float newFlashColor = 255.0f;
-				WPM<float>(memory.proc, (localPlayer + entity.flFlashMaxAlpha), newFlashColor);
-			}
-			break;
+			float newFlashColor = 255.0f;
+			WPM<float>(memory.Getproc(), (localPlayer + entity.flFlashMaxAlpha), newFlashColor);
 		}
-
-
+				
 		Sleep(16);
 	}
-
 
 	return 0;
 }
@@ -105,11 +102,11 @@ DWORD Memory::Aim(LPVOID lpParam)
 				WPM<Vector>(memory.proc, (memory.GetEngPointer() + entity.viewAngle), angle);
 
 				//now to shoot we check vPunch, well we don't want to shoot like retards
-				if (memory.GetmyaPunch().x == 0.f && ! memory.trigger)
+				if (memory.GetmyaPunch().x  > -0.02f && !memory.Wpm)
 				{
-					WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 5);
+					WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 1);
 					Sleep(25); //need to find better sleep
-					WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 4);
+					WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 0);
 				}
 			}
 
@@ -189,18 +186,17 @@ DWORD Memory::Trigger(LPVOID lParam)
 		{	//b.1)	
 			for (std::vector<DWORD>::size_type i = 0; i != enemys.size(); ++i) //internal loop enemys/targets
 			{	//b.2)	
-				if (memory.GetEntId(enemys[i]) == memory.GetmyCrossId() && memory.GetEntHealth(enemys[i]) > 0) //entity id is equal to our crosshairId?
+				if (memory.GetEntId(enemys[i]) == memory.GetmyCrossId() && memory.GetEntHealth(enemys[i]) > 0 && memory.GetweaponAmmo() > 0) //entity id is equal to our crosshairId?
 				{
-					//added punch test to not shoot like idiot
-					if (!memory.aim && memory.GetmyaPunch().x < 0.1f)
+					
+					//added punch test to not shoot like idiot , need add check if reloading
+					if (memory.GetmyaPunch().x  > -0.02f)
 					{
 						//b.3) shoot: write to the memory +attack / -attack
-						memory.Wpm = true;
-						Sleep(25);
+						memory.Wpm = true;						
 						WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 5);
-						Sleep(25); //need to find best sleep
+						Sleep(25); //need to find better sleep
 						WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 4);
-						Sleep(70);//maybe add a Sleep here too.
 						memory.Wpm = false;
 					}
 				}
@@ -209,7 +205,7 @@ DWORD Memory::Trigger(LPVOID lParam)
 
 		Sleep(16);//Sleep(1) is overkill
 	}
-
+	memory.trigger = false;
 	return 0;
 }
 
