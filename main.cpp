@@ -67,14 +67,15 @@ int Menu()
 		break;
 
 	case 4:
-		if (!mem->noflash){
-			mem->StartNoFlash();
-			mem->noflash = true;
-		}
-		else
+		if (!mem->noflash)
 		{
-			TerminateThread(mem->snF, 0);
+			mem->noflash = true;
+			mem->StartNoFlash();			
+		}
+		else 		
+		{
 			mem->noflash = false;
+			TerminateThread(mem->snF, 0);			
 		}
 			
 		system("cls");
