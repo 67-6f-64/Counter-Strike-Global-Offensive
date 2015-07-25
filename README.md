@@ -17,10 +17,12 @@ b) Triggerbot (my own code):  based in team and crosshairId
 * Tested with net_fakelag 40 (90 in net_graph) and seens work fast yet
 * Added punch.x test to shoot again. And aimbot check to not shoot together.
 * Tweaked punch check
+* Added ammo count
 
 c) Aimbot (my own code): based in target distance
 * Fixed high ping problem, not perfect yet (ping 90 seens fast now)
 * Tweaked punch check and added check to no conflict with triggerbot together
+* Added ammo count
 
 d) Noflash: based in color
 * need fix when turn off
