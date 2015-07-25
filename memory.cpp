@@ -123,7 +123,14 @@ Vector Memory::GetmyaPunch()
 Vector Memory::GetmyViewangle()
 {
 	myViewangle = RPM<Vector>(proc, (GetlocalPlayer() + entity.viewAngle), sizeof(Vector));
+	myViewangle.z = 0.0f;
 	return myViewangle;
+}
+
+Vector Memory::GetmyBonePos(int id)
+{
+	myBonePos = BonePos(GetlocalPlayer() , entity.boneMatrix, id);
+	return myBonePos;
 }
 
 /*
@@ -206,6 +213,28 @@ float Memory::GetFlashColor()
 	return flashColor;
 }
 
+/*
+
+WEAPON stats
+
+*/
+
+int Memory::GetweaponAmmo()
+{
+	localPlayerBase = RPM<DWORD>(proc, (clientDll + entity.localPlayer), sizeof(DWORD));
+	
+	DWORD weaponBaseIndex = RPM<DWORD>(proc, (localPlayerBase + entity.hActiveWeapon), sizeof(DWORD));
+	weaponBaseIndex &= 0xFFF;
+	DWORD weaponEntity = RPM<DWORD>(proc, (clientDll + entity.entityBase + (weaponBaseIndex - 1) * 0x10), sizeof(DWORD));
+	if (weaponEntity != NULL)
+	{
+		weaponAmmo = RPM<int>(proc, (weaponEntity + entity.clip1), sizeof(int));
+		return weaponAmmo;
+	}
+	return 0;
+}
+
+
 DWORD Memory::GetClientDll() //client.dll 
 {
 	if (clientDll != NULL)
@@ -218,6 +247,11 @@ DWORD Memory::GetEngineDll() //engine.dll
 	if (engineDll != NULL)
 		return engineDll;
 	return 0;
+}
+
+HANDLE Memory::Getproc()
+{
+	return proc;
 }
 
 DWORD Memory::Module(LPCSTR moduleName, DWORD pId) //function to get module address csgo.exe/client.dll/engine.dll/xxx.dll with pid
