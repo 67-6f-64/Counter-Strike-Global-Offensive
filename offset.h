@@ -29,6 +29,11 @@ struct Entity
 	DWORD viewAngle = 0x4CE0;
 	DWORD vecPunch = 0x13E8;
 	DWORD engineBase = 0x5D2294;
+	DWORD hActiveWeapon = 0x12C0; //hActiveWeapon
+	DWORD id = 0x1690; //index
+	DWORD accPenalty = 0x1670;
+	DWORD clip1 = 0x15C0;
+	DWORD reloading = 0x1601;
 
 	//noflash client.dll
 	DWORD flFlashDuration = 0x1DB4;
