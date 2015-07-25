@@ -1,11 +1,19 @@
 #ifndef HEADER_H
 #define HEADER_H
+#define PI 3.14159265
 
 #include <Windows.h>
 #include <iostream>
 #include <TlHelp32.h>
 #include <vector>
 #include "offset.h"
+
+
+#include <d3d9.h>
+#include <d3dx9.h>
+#pragma comment (lib, "d3d9.lib")
+#pragma comment (lib, "d3dx9.lib")
+
 
 //VECTOR x,y,z struct for vecOrigin
 typedef struct
@@ -44,6 +52,8 @@ public:
 	Vector BonePos(DWORD target, DWORD address, int boneId);
 	Vector CalcAngle(Vector& src, Vector& dst);
 	void ClampAngle(Vector &angles);
+	float AngleBetween(Vector &angleA, Vector &angleB, bool angle);
+	bool isInFov(D3DXVECTOR3 forward, D3DXVECTOR3 EnemyPos, D3DXVECTOR3 LocalPos, float fov);
 
 	//thread no flash
 	bool noflash = false;
@@ -65,6 +75,7 @@ public:
 	Vector GetmyPos(); //get data pos: x, y, z
 	Vector GetmyaPunch();
 	Vector GetmyViewangle();
+	Vector GetmyBonePos(int id);
 
 	//entityLoop functions	
 	int GetEntHealth(DWORD entAddress); //get data health
@@ -83,6 +94,14 @@ public:
 	float GetflashDuration();
 	float GetFlashColor();
 
+	//weapon
+	int GetweaponId();
+	int GetweaponAmmo();
+	bool IsWeaponReloading();
+
+	//
+	HANDLE Getproc();
+
 protected:
 	HWND gameHwnd;
 	HANDLE proc;
@@ -99,6 +118,7 @@ protected:
 	int index = 0;
 	Vector myPos;
 	Vector myViewangle;
+	Vector myBonePos;
 
 	//entity
 	DWORD entityLoop;
@@ -119,6 +139,10 @@ protected:
 	//flash
 	float flashDurantion = 0;
 	float flashColor = 0;
+
+	//weapon
+	int weaponAmmo = 0;
+	bool weaponReloading;
 };
 
 //ReadProcessMemory template
