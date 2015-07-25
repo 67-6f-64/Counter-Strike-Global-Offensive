@@ -15,13 +15,13 @@ void Memory::StartNoFlash()
 
 DWORD Memory::NoFlash(LPVOID lParam)
 {
-	
+
 	DWORD localPlayer = RPM<DWORD>(memory.proc, (memory.clientDll + entity.localPlayer), sizeof(DWORD));
 
 	while (memory.noflash)
 	{
 
-		
+
 
 		if (memory.GetFlashColor() > 0.0f && memory.GetFlashColor() != 0.0f)
 		{
@@ -29,13 +29,13 @@ DWORD Memory::NoFlash(LPVOID lParam)
 			WPM<float>(memory.Getproc(), (localPlayer + entity.flFlashMaxAlpha), newFlashColor);
 		}
 
-		
+
 		if (memory.GetFlashColor() == 0.0f && memory.GetFlashColor() != 255.0f)
 		{
 			float newFlashColor = 255.0f;
 			WPM<float>(memory.Getproc(), (localPlayer + entity.flFlashMaxAlpha), newFlashColor);
 		}
-				
+
 		Sleep(16);
 	}
 
@@ -44,7 +44,7 @@ DWORD Memory::NoFlash(LPVOID lParam)
 
 
 void Memory::StartAim()
-{	
+{
 	sA = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Aim, NULL, 0, NULL);
 	aim = true;
 }
@@ -54,11 +54,13 @@ MY AIMBOT LOGIC, you can find other in UC forum, don't forget to credit if using
 */
 DWORD Memory::Aim(LPVOID lpParam)
 {
-	
+
 	int targets = 0; //number of targets
 	int distance = 100; //start value to check distance
 	Vector angle; //angle to write to target heads 
-
+	Vector mPos;
+	Vector boneP;
+	int shoots = 0;
 	while (true)
 	{
 
@@ -79,9 +81,13 @@ DWORD Memory::Aim(LPVOID lpParam)
 					continue;
 
 				//dist myPos and targetHead - 10 is head, 2 is cheast
-				Vector mPos = memory.GetmyPos();
-				Vector boneP = memory.BonePos(memory.entityLoop, entity.boneMatrix, 10);
+				mPos = memory.GetmyPos();				
+				boneP = memory.BonePos(memory.entityLoop, entity.boneMatrix, 10);
 				int dist = (int)memory.Distance(mPos, boneP, true);
+
+				//
+				//Vector eyeAngle = { (mPos.x + viewAngle.x), (mPos.y + viewAngle.z) + (mPos.z + viewAngle.z) };
+				//Vector delta = { (mPos.x - boneP.x), (mPos.y - boneP.y), (mPos.z - boneP.z) };
 
 				//find closest target
 				if (dist < distance)
@@ -99,28 +105,58 @@ DWORD Memory::Aim(LPVOID lpParam)
 				//First we write viewangle to target'head position
 				memory.ClampAngle(angle);
 
-				WPM<Vector>(memory.proc, (memory.GetEngPointer() + entity.viewAngle), angle);
+				//Vector viewAngle = RPM<Vector>(memory.proc, (memory.GetlocalPlayer() +entity.viewAngle), sizeof(Vector));
+				////as i understand eyeViewAngle = myPos + myViewAngle
+				Vector viewAngle = RPM<Vector>(memory.proc, (memory.GetlocalPlayer() + entity.viewAngle), sizeof(Vector));
+				Vector eyeAngle = { (mPos.x + viewAngle.x), (mPos.y + viewAngle.z) + (mPos.z + viewAngle.z) };
+				Vector delta = { (mPos.x - boneP.x), (mPos.y - boneP.y), (mPos.z - boneP.z) };			
 
-				//now to shoot we check vPunch, well we don't want to shoot like retards
-				if (memory.GetmyaPunch().x  > -0.02f && !memory.Wpm)
+				if (memory.AngleBetween(eyeAngle, delta, false) <= 90)//check vertical angle < 90
 				{
-					WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 1);
-					Sleep(25); //need to find better sleep
-					WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 0);
+					WPM<Vector>(memory.proc, (memory.GetEngPointer() + entity.viewAngle), angle);
+
+					//now to shoot we check vPunch, well we don't want to shoot like retards
+					if (memory.GetmyaPunch().x  > -0.01f && !memory.Wpm && memory.GetweaponAmmo() > 0)
+					{
+						WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 1);
+						Sleep(25); //need to find better sleep
+						WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 0);
+						shoots++;
+
+						//std::cout << "Enemy in fov: " << memory.isInFov(viewAngle, boneP, myPos, 50) << std::endl;
+						//std::cout << "EyePosition && delta  = " << " Cos: "
+						//	<< memory.AngleBetween(eyeAngle, delta, false) << " Angle: " << memory.AngleBetween(eyeAngle, delta, true) << std::endl << std::endl;						
+					}
+
 				}
+				//WPM<Vector>(memory.proc, (memory.GetEngPointer() + entity.viewAngle), angle);
+
+				////now to shoot we check vPunch, well we don't want to shoot like retards
+				//if (memory.GetmyaPunch().x  > -0.02f && !memory.Wpm)
+				//{
+				//	WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 1);
+				//	Sleep(25); //need to find better sleep
+				//	WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 0);
+				//	shoots++;
+				//	std::cout << "Shots: " << shoots << " Cos: " << memory.AngleBetween(mPos, boneP, false) << " Angle: " << memory.AngleBetween(mPos, boneP, true) << std::endl;
+				//	std::cout << "Shots -myBone: " << shoots << " Cos: " << memory.AngleBetween(eyeAngle, boneP, false) << " Angle: " << memory.AngleBetween(eyeAngle, boneP, true) << std::endl;
+				//}
+				
 			}
 
 			//after everything, reset to find new target
 			distance = 100;
 			targets = 0;
+			
 		}
 		else
 		{
 			distance = 100;
 			targets = 0;
+			//shoots = 0;
 		}
 
-		
+
 
 		//if (!memory.aim)
 		//	break;
@@ -132,7 +168,7 @@ DWORD Memory::Aim(LPVOID lpParam)
 
 void Memory::StartTrigger()
 {
-	
+
 	sT = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Trigger, NULL, 0, NULL);
 	memory.trigger = true;
 }
@@ -149,7 +185,7 @@ b.3) shoot
 IF YOU WANT TO USE PUT CREDITS ty
 */
 DWORD Memory::Trigger(LPVOID lParam)
-{	
+{
 	std::vector<DWORD> enemys;
 	int oldTeam = 9; //random number, can't be 1,2,3 these are spec tr and ct
 	while (true)
@@ -186,14 +222,15 @@ DWORD Memory::Trigger(LPVOID lParam)
 		{	//b.1)	
 			for (std::vector<DWORD>::size_type i = 0; i != enemys.size(); ++i) //internal loop enemys/targets
 			{	//b.2)	
-				if (memory.GetEntId(enemys[i]) == memory.GetmyCrossId() && memory.GetEntHealth(enemys[i]) > 0 && memory.GetweaponAmmo() > 0) //entity id is equal to our crosshairId?
+				if (memory.GetEntId(enemys[i]) == memory.GetmyCrossId() && memory.GetEntHealth(enemys[i]) > 0 
+					&& memory.GetweaponAmmo() > 0) //entity id is equal to our crosshairId?
 				{
-					
+
 					//added punch test to not shoot like idiot , need add check if reloading
-					if (memory.GetmyaPunch().x  > -0.02f)
+					if (memory.GetmyaPunch().x > -0.02f)
 					{
 						//b.3) shoot: write to the memory +attack / -attack
-						memory.Wpm = true;						
+						memory.Wpm = true;
 						WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 5);
 						Sleep(25); //need to find better sleep
 						WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 4);
@@ -229,6 +266,7 @@ DWORD Memory::ReadMemory(LPVOID lParam) // thread: ReadMemory where we get data 
 		std::cout << "-> Team: " << memory.GetmyTeam() << std::endl;
 		std::cout << "-> Flags: " << memory.GetmyFlags() << std::endl;
 		std::cout << "-> Crosshair Id: " << memory.GetmyCrossId() << std::endl;
+		std::cout << "-> Currectly Ammo: " << memory.GetweaponAmmo() << std::endl;
 		std::cout << "-> localPlayer Position X: " << memory.GetmyPos().x
 			<< " Y: " << memory.GetmyPos().y
 			<< " Z: " << memory.GetmyPos().z << std::endl << std::endl;
