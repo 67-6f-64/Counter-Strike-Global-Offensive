@@ -1,5 +1,71 @@
 #include "main.h"
 
+#include <math.h>
+
+
+//bool Memory::isInFov(D3DXVECTOR3 forward, D3DXVECTOR3 EnemyPos, D3DXVECTOR3 LocalPos, float fov)
+//{
+//	D3DXVECTOR3 vec1, vec2;
+//	D3DXVec3Normalize(&vec1, &forward);
+//	D3DXVec3Normalize(&vec2, &(EnemyPos - LocalPos));
+//	float angle = acos(D3DXVec3Dot(&vec1, &vec2));
+//	angle = D3DXToDegree(angle);
+//
+//
+//	if (angle > (fov / 2))
+//		return false;
+//
+//	return true;
+//}
+
+bool Memory::isInFov(D3DXVECTOR3 forward, D3DXVECTOR3 EnemyPos, D3DXVECTOR3 LocalPos, float fov)
+{
+	D3DXVECTOR3 vec1, vec2;
+	D3DXVec3Normalize(&vec1, &forward);
+	D3DXVec3Normalize(&vec2, &(EnemyPos - LocalPos));
+	float angle = acos(D3DXVec3Dot(&vec1, &vec2));
+	angle = D3DXToDegree(angle);
+
+
+	if (angle > (fov / 2))
+		return false;
+
+	return true;
+}
+
+float Memory::AngleBetween(Vector &angleA, Vector &angleB, bool angle)
+{
+
+	//angleA = myViewAngle
+	//angleB = enemyPos
+
+	Vector firstAngle;
+	Vector SecondAngle;
+
+	//mag a
+	firstAngle = { std::pow(angleA.x, 2), std::pow(angleA.y, 2), std::pow(angleA.z, 2) };
+	float firstAngleTotal = firstAngle.x + firstAngle.y + firstAngle.z;
+	//mag b
+	SecondAngle = { std::pow(angleB.x, 2), std::pow(angleB.y, 2), std::pow(angleB.z, 2) };
+	float secondAngleTotal = SecondAngle.x + SecondAngle.y + SecondAngle.z;
+	
+	//product 2 vector angleA x angleB
+	float x = angleA.x * angleB.x;
+	float y = angleA.y * angleB.y;
+	float z = angleA.z * angleB.z;
+	float resultProduct = x + y + z;
+
+	//angle is or fov
+	float cos = std::cos((resultProduct / (std::sqrt(firstAngleTotal) * std::sqrt(secondAngleTotal)))); // gerar coseno
+	
+	if (angle) // give angle based in cos
+	{
+		cos = (float)(std::acos(cos) * 180.0 / PI);
+	}
+	//this will return cos like 0,9998 0,5433
+	return cos;
+}
+
 double Memory::Distance(Vector a, Vector b, bool metters)
 {
 	double dist = std::sqrt(
