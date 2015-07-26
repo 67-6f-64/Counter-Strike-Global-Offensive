@@ -49,11 +49,11 @@ public:
 	void StartAim();
 	static DWORD Aim(LPVOID lParam);
 	double Distance(Vector a, Vector b, bool metters);
-	Vector BonePos(DWORD target, DWORD address, int boneId);
 	Vector CalcAngle(Vector& src, Vector& dst);
 	void ClampAngle(Vector &angles);
 	float AngleBetween(Vector &angleA, Vector &angleB, bool angle);
 	bool isInFov(D3DXVECTOR3 forward, D3DXVECTOR3 EnemyPos, D3DXVECTOR3 LocalPos, float fov);
+	bool isInMyFov();
 
 	//thread no flash
 	bool noflash = false;
@@ -85,7 +85,10 @@ public:
 	int GetEntId(DWORD entAddress); // get data index
 	bool GetEntDormant(DWORD entAddress); //get data dormant
 	Vector GetEntPos(DWORD entAddress); //get data pos: x, y, z
-	Vector GetEntbonePos(DWORD entAddress);
+	//Vector GetEntbonePos(DWORD entAddress);
+
+	//boneposition, id 10 = head, id 2 = cheast
+	Vector BonePos(DWORD target, DWORD address, int boneId);
 
 	//engine
 	DWORD GetEngPointer();
@@ -143,6 +146,7 @@ protected:
 	//weapon
 	int weaponAmmo = 0;
 	bool weaponReloading;
+	int weaponid;
 };
 
 //ReadProcessMemory template
