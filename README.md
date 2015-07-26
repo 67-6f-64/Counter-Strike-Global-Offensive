@@ -23,7 +23,7 @@ c) Aimbot (my own code): based in target distance
 * works fast with high ping like 90 in net_graph, to test use net_fakelag 40 in command
 * Tweaked punch again to : -0.09f
 * Added ammo count (clip1)
-* *removed useless angle check
+* removed useless angle check
 
 d) Noflash: based in color
 * need fix when turn off
