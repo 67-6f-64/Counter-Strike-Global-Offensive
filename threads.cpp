@@ -56,19 +56,21 @@ DWORD Memory::Aim(LPVOID lpParam)
 {
 
 	int targets = 0; //number of targets
-	int distance = 100; //start value to check distance
+	int distance = 61; //start value to check distance
 	Vector angle; //angle to write to target heads 
 	Vector mPos;
 	Vector boneP;
-	int shoots = 0;
+	//int shoots = 0;
 	while (true)
 	{
 
-		if (GetAsyncKeyState(0x46)) //just to test 'F'
+		/*                                    FIND CLOSETS TARGET                                                   */
+		
+		//just to test 'F'
+		if (GetAsyncKeyState(0x46)) 
 		{
-			/*				FIND CLOSETS TARGET				*/
-
-			for (int i = 0; i < 64; ++i) //loop to get enemy's
+			//loop to get enemy's
+			for (int i = 0; i < 64; ++i) 
 			{
 				memory.entityLoop = RPM<DWORD>(memory.proc, ((memory.clientDll + entity.entityBase) + ((i - 1)*entity.loopDistance)), sizeof(DWORD));
 
@@ -80,14 +82,10 @@ DWORD Memory::Aim(LPVOID lpParam)
 					|| memory.GetEntTeam(memory.entityLoop) == memory.GetmyTeam() || memory.GetEntHealth(memory.entityLoop) == 0)
 					continue;
 
-				//dist myPos and targetHead - 10 is head, 2 is cheast
-				mPos = memory.GetmyPos();				
+				//dist myPos and targetHead - bone 10 is head, 2 is cheast
+				mPos = memory.GetmyPos();
 				boneP = memory.BonePos(memory.entityLoop, entity.boneMatrix, 10);
 				int dist = (int)memory.Distance(mPos, boneP, true);
-
-				//
-				//Vector eyeAngle = { (mPos.x + viewAngle.x), (mPos.y + viewAngle.z) + (mPos.z + viewAngle.z) };
-				//Vector delta = { (mPos.x - boneP.x), (mPos.y - boneP.y), (mPos.z - boneP.z) };
 
 				//find closest target
 				if (dist < distance)
@@ -98,71 +96,36 @@ DWORD Memory::Aim(LPVOID lpParam)
 				}
 			}
 
-			/* WE HAVE A TARGET LETS SET ANGLE AND SHOOT */
+			///* WE HAVE A TARGET LETS SET ANGLE AND SHOOT */
 
 			if (targets > 0) // we have a target?
 			{
-				//First we write viewangle to target'head position
+				//	First we write viewangle to target'head position
 				memory.ClampAngle(angle);
 
-				//Vector viewAngle = RPM<Vector>(memory.proc, (memory.GetlocalPlayer() +entity.viewAngle), sizeof(Vector));
-				////as i understand eyeViewAngle = myPos + myViewAngle
-				Vector viewAngle = RPM<Vector>(memory.proc, (memory.GetlocalPlayer() + entity.viewAngle), sizeof(Vector));
-				Vector eyeAngle = { (mPos.x + viewAngle.x), (mPos.y + viewAngle.z) + (mPos.z + viewAngle.z) };
-				Vector delta = { (mPos.x - boneP.x), (mPos.y - boneP.y), (mPos.z - boneP.z) };			
+				WPM<Vector>(memory.proc, (memory.GetEngPointer() + entity.viewAngle), angle);
 
-				if (memory.AngleBetween(eyeAngle, delta, false) <= 90)//check vertical angle < 90
+				//	now to shoot we check vPunch, well we don't want to shoot like retards
+				if (memory.GetmyaPunch().x > -0.09f && memory.GetweaponAmmo() > 0)
 				{
-					WPM<Vector>(memory.proc, (memory.GetEngPointer() + entity.viewAngle), angle);
+					WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 1);
+					Sleep(25); //need to find better sleep
+					WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 0);
 
-					//now to shoot we check vPunch, well we don't want to shoot like retards
-					if (memory.GetmyaPunch().x  > -0.01f && !memory.Wpm && memory.GetweaponAmmo() > 0)
-					{
-						WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 1);
-						Sleep(25); //need to find better sleep
-						WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 0);
-						shoots++;
-
-						//std::cout << "Enemy in fov: " << memory.isInFov(viewAngle, boneP, myPos, 50) << std::endl;
-						//std::cout << "EyePosition && delta  = " << " Cos: "
-						//	<< memory.AngleBetween(eyeAngle, delta, false) << " Angle: " << memory.AngleBetween(eyeAngle, delta, true) << std::endl << std::endl;						
-					}
-
+					//std::cout << "Angle to Write: " << angle.x << "," << angle.y << "," << angle.y << std::endl;
 				}
-				//WPM<Vector>(memory.proc, (memory.GetEngPointer() + entity.viewAngle), angle);
-
-				////now to shoot we check vPunch, well we don't want to shoot like retards
-				//if (memory.GetmyaPunch().x  > -0.02f && !memory.Wpm)
-				//{
-				//	WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 1);
-				//	Sleep(25); //need to find better sleep
-				//	WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 0);
-				//	shoots++;
-				//	std::cout << "Shots: " << shoots << " Cos: " << memory.AngleBetween(mPos, boneP, false) << " Angle: " << memory.AngleBetween(mPos, boneP, true) << std::endl;
-				//	std::cout << "Shots -myBone: " << shoots << " Cos: " << memory.AngleBetween(eyeAngle, boneP, false) << " Angle: " << memory.AngleBetween(eyeAngle, boneP, true) << std::endl;
-				//}
-				
+				//reset to find new target
+				distance = 61;
+				targets = 0;
 			}
-
-			//after everything, reset to find new target
-			distance = 100;
-			targets = 0;
-			
 		}
 		else
 		{
-			distance = 100;
+			distance = 61;
 			targets = 0;
-			//shoots = 0;
 		}
-
-
-
-		//if (!memory.aim)
-		//	break;
-
-		Sleep(1);
-	}
+		Sleep(16);
+	} 
 	return 0;
 }
 
@@ -175,7 +138,9 @@ void Memory::StartTrigger()
 
 /*THIS TRIGGER ONLY WORKS AFTER ALL ENEMYS JOIN THE ENEMY TEAM/IF you change team and a new target join it works too.
 SO THIS A TRIGGER BOT FOR MM VERSION or you can wait everybody join and join after
-* looking for a solution at thi moment: case same team and enter new target in other team, how update it?
+
+* looking for a solution: case same team and enter new target in other team, how update it? Update only if necessary.
+
 a) Check teams
 a.1) Create list of targets checking vaid entity an team
 b) Check is we are in same team yet
@@ -191,57 +156,56 @@ DWORD Memory::Trigger(LPVOID lParam)
 	while (true)
 	{
 
-		//to stop thread set memory.thread to false
-		if (!memory.trigger)
-			break;
-
-		//a)
+		//a) get all targets
 		if (memory.GetmyTeam() != oldTeam)
 		{
 			oldTeam = memory.GetmyTeam(); // since we are in a differnt team set the old to actual
 
 			enemys.clear(); //clear to get new enemys address's
-			//a.1)
-			for (int i = 0; i < 64; ++i) //loop to get enemy's
+
+			//a.1)//loop to get targets
+			for (int i = 0; i < 64; ++i)
 			{
 				memory.entityLoop = RPM<DWORD>(memory.proc, ((memory.clientDll + entity.entityBase) + ((i - 1)*entity.loopDistance)), sizeof(DWORD));
 
 				if (memory.entityLoop == NULL) //if entity is not valid
 					continue;
 
-				if (memory.GetEntTeam(memory.entityLoop) != 0 && memory.eteam != memory.team) //if entity is not 0 and is not our team add to vector
+				if (memory.GetEntTeam(memory.entityLoop) != 0 && memory.GetmyTeam() != memory.GetEntTeam(memory.entityLoop)) //if entity is not 0 and is not our team add to vector
 				{
 					enemys.push_back(memory.entityLoop);
 				}
 			}
+			//we have all targets don't need to reload get again
 
 		}
 
-		//b)
-		if (memory.GetmyTeam() == oldTeam) //i'm in the same team yet, so i don't need to get all entitys again (loop/RPM 64 times again)
-		{	//b.1)	
-			for (std::vector<DWORD>::size_type i = 0; i != enemys.size(); ++i) //internal loop enemys/targets
-			{	//b.2)	
-				if (memory.GetEntId(enemys[i]) == memory.GetmyCrossId() && memory.GetEntHealth(enemys[i]) > 0 
-					&& memory.GetweaponAmmo() > 0) //entity id is equal to our crosshairId?
+		//b)i'm in the same team yet, so i don't need to get all entitys again (loop/RPM 64 times again)
+		if (memory.GetmyTeam() == oldTeam)
+		{	//b.1) internal loop of targets, vector loop is more fast in c++11/14
+			for (std::vector<DWORD>::size_type i = 0; i != enemys.size(); ++i)
+			{	//b.2) entity id is equal to our crosshairId? if not let's get all targets again, this will prevent a new target wihout address's
+
+				if (memory.GetEntId(enemys[i]) != memory.GetmyCrossId() || memory.GetweaponAmmo() == 0)
+					continue;
+
+
+				//added punch test to not shoot like idiot , need add check if reloading
+				if (memory.GetmyaPunch().x > -0.09f)
 				{
+					//b.3) shoot: write to the memory +attack / -attack
+					//memory.Wpm = true; // check to use aimbot and trigger together
+					WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 5);
+					Sleep(25); //need to find better sleep
+					WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 4);
+					//memory.Wpm = false;
+				} //check to shoot
+			} //loop targets
+		}// myteam = oldteam
 
-					//added punch test to not shoot like idiot , need add check if reloading
-					if (memory.GetmyaPunch().x > -0.02f)
-					{
-						//b.3) shoot: write to the memory +attack / -attack
-						memory.Wpm = true;
-						WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 5);
-						Sleep(25); //need to find better sleep
-						WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 4);
-						memory.Wpm = false;
-					}
-				}
-			}
-		}
 
-		Sleep(16);//Sleep(1) is overkill
-	}
+		Sleep(16);
+	}//while(true>
 	memory.trigger = false;
 	return 0;
 }
