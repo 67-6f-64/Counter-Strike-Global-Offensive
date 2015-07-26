@@ -136,22 +136,21 @@ void Memory::StartTrigger()
 	memory.trigger = true;
 }
 
-/*THIS TRIGGER ONLY WORKS AFTER ALL ENEMYS JOIN THE ENEMY TEAM/IF you change team and a new target join it works too.
-SO THIS A TRIGGER BOT FOR MM VERSION or you can wait everybody join and join after
-
-* looking for a solution: case same team and enter new target in other team, how update it? Update only if necessary.
-
+/*
 a) Check teams
 a.1) Create list of targets checking vaid entity an team
+a.2) Store target's address and target's ID (2 vectors)
+
 b) Check is we are in same team yet
 b.1) Loop only valid targets
 b.2) loop target and check crosshair id and target id and target's health
 b.3) shoot
-IF YOU WANT TO USE PUT CREDITS ty
+IF YOU WANT TO USE PUT CREDITS ty creditc to dmThread or dm0000
 */
 DWORD Memory::Trigger(LPVOID lParam)
 {
 	std::vector<DWORD> enemys;
+	std::vector<int> enemysId;
 	int oldTeam = 9; //random number, can't be 1,2,3 these are spec tr and ct
 	while (true)
 	{
@@ -162,6 +161,7 @@ DWORD Memory::Trigger(LPVOID lParam)
 			oldTeam = memory.GetmyTeam(); // since we are in a differnt team set the old to actual
 
 			enemys.clear(); //clear to get new enemys address's
+			enemysId.clear(); //clear targets id, used to check crosshair
 
 			//a.1)//loop to get targets
 			for (int i = 0; i < 64; ++i)
@@ -173,7 +173,8 @@ DWORD Memory::Trigger(LPVOID lParam)
 
 				if (memory.GetEntTeam(memory.entityLoop) != 0 && memory.GetmyTeam() != memory.GetEntTeam(memory.entityLoop)) //if entity is not 0 and is not our team add to vector
 				{
-					enemys.push_back(memory.entityLoop);
+					enemys.push_back(memory.entityLoop); //store target address
+					enemysId.push_back(memory.GetEntId(memory.entityLoop)); //store target id
 				}
 			}
 			//we have all targets don't need to reload get again
@@ -182,14 +183,22 @@ DWORD Memory::Trigger(LPVOID lParam)
 
 		//b)i'm in the same team yet, so i don't need to get all entitys again (loop/RPM 64 times again)
 		if (memory.GetmyTeam() == oldTeam)
-		{	//b.1) internal loop of targets, vector loop is more fast in c++11/14
+		{	
+			//b.1) internal loop of targets, vector loop is more fast in c++11/14
 			for (std::vector<DWORD>::size_type i = 0; i != enemys.size(); ++i)
-			{	//b.2) entity id is equal to our crosshairId? if not let's get all targets again, this will prevent a new target wihout address's
+			{	
+				//b.2) entity id is equal to our crosshairId? if not let's get all targets again, this will prevent a new target wihout address's				
+				//if new target enter in enemy team we need to reset the list and find the new target
+				//we check for crossHair id contains in list of target's id, if not get targets again.
+				if (std::find(enemysId.begin(), enemysId.end(), memory.GetmyCrossId()) == enemysId.end())
+				{
+					oldTeam = 9;
+					break;
+				}				
 
 				if (memory.GetEntId(enemys[i]) != memory.GetmyCrossId() || memory.GetweaponAmmo() == 0)
-					continue;
-
-
+					continue;		
+			
 				//added punch test to not shoot like idiot , need add check if reloading
 				if (memory.GetmyaPunch().x > -0.09f)
 				{
