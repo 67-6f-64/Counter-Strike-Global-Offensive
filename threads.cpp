@@ -205,7 +205,29 @@ DWORD Memory::Trigger(LPVOID lParam)
 					//b.3) shoot: write to the memory +attack / -attack
 					//memory.Wpm = true; // check to use aimbot and trigger together
 					WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 5);
-					Sleep(25); //need to find better sleep
+
+					//shoot logic based in distance
+					Vector mPos = memory.GetmyPos();
+					Vector boneP = memory.BonePos(enemys[i], entity.boneMatrix, 10);
+					
+					//SHORT RANGE burst fire ( 3 shots)
+					if (memory.Distance(mPos, boneP, true) <= 15)
+					{
+						Sleep(250); //250 seens fine for ak-47 brust
+					}
+					//MEDIUN RANGE , 2 shots
+					if (memory.Distance(mPos, boneP, true) >= 16 && memory.Distance(mPos, boneP, true) <= 30)
+					{
+						Sleep(150); //150 seens like 2 shots
+					}
+					//LONG RANGE - tap tap
+					if (memory.Distance(mPos, boneP, true) >= 31)
+					{
+						Sleep(25); //need to find better sleep
+					}
+
+
+					//Sleep(25); //need to find better sleep
 					WPM<int>(memory.proc, (memory.clientDll + entity.forceAttack), 4);
 					//memory.Wpm = false;
 				} //check to shoot
@@ -214,7 +236,7 @@ DWORD Memory::Trigger(LPVOID lParam)
 
 
 		Sleep(16);
-	}//while(true>
+	}//while(true)
 	memory.trigger = false;
 	return 0;
 }
