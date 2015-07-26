@@ -136,7 +136,7 @@ void Memory::StartTrigger()
 	memory.trigger = true;
 }
 
-/*
+/* Works with high ping, set net_fakelag 40 to produce ping 90 in net_graph, it shoot fast not like others
 a) Check teams
 a.1) Create list of targets checking vaid entity an team
 a.2) Store target's address and target's ID (2 vectors)
@@ -243,6 +243,10 @@ DWORD Memory::ReadMemory(LPVOID lParam) // thread: ReadMemory where we get data 
 		std::cout << "-> localPlayer Position X: " << memory.GetmyPos().x
 			<< " Y: " << memory.GetmyPos().y
 			<< " Z: " << memory.GetmyPos().z << std::endl << std::endl;
+		std::cout << "My Player weapon info:" << std::endl;
+		std::cout << "-> Ammo: " << memory.GetweaponAmmo() << std::endl;
+		std::cout << "-> WeaponId: " << memory.GetweaponId() << std::endl;
+		std::cout << "-> IsReloading: " << memory.IsWeaponReloading() << std::endl;
 
 		/*                      LIST LOCALPLAYER ENEMYS                                  */
 		for (int i = 0; i < 64; i++)
