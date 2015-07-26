@@ -19,7 +19,7 @@ b) Triggerbot (my own code):  based in team and crosshairId
 * Tweaked punch again to : -0.09f
 * Added ammo count (clip1)
 * fixed problem whe new target join team, based in targets id
-* added type of host based in distance: long rage Tap-Tap, medium range 2 shots, close range burst(3 shots)
+* added type of shot based in distance: long rage Tap-Tap, medium range 2 shots, close range burst(3 shots)
 
 c) Aimbot (my own code): based in target distance
 * works fast with high ping like 90 in net_graph, to test use net_fakelag 40 in command and fakeloss 20
