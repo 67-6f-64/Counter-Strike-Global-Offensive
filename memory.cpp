@@ -123,7 +123,7 @@ Vector Memory::GetmyaPunch()
 Vector Memory::GetmyViewangle()
 {
 	myViewangle = RPM<Vector>(proc, (GetlocalPlayer() + entity.viewAngle), sizeof(Vector));
-	myViewangle.z = 0.0f;
+	//myViewangle.z = 0.0f;
 	return myViewangle;
 }
 
@@ -177,11 +177,11 @@ bool Memory::GetEntDormant(DWORD entAddress)
 	return eDormant;
 }
 
-Vector Memory::GetEntbonePos(DWORD entAddress)
-{
-	bonePos = RPM<Vector>(proc, (entAddress + entity.boneMatrix), sizeof(Vector));
-	return bonePos;
-}
+//Vector Memory::GetEntbonePos(DWORD entAddress)
+//{
+//	bonePos = RPM<Vector>(proc, (entAddress + entity.boneMatrix), sizeof(Vector));
+//	return bonePos;
+//}
 
 /*
 
@@ -234,6 +234,37 @@ int Memory::GetweaponAmmo()
 	return 0;
 }
 
+int Memory::GetweaponId()
+{
+	localPlayerBase = RPM<DWORD>(proc, (clientDll + entity.localPlayer), sizeof(DWORD));
+
+	DWORD weaponBaseIndex = RPM<DWORD>(proc, (localPlayerBase + entity.hActiveWeapon), sizeof(DWORD));
+	weaponBaseIndex &= 0xFFF;
+	DWORD weaponEntity = RPM<DWORD>(proc, (clientDll + entity.entityBase + (weaponBaseIndex - 1) * 0x10), sizeof(DWORD));
+	if (weaponEntity != NULL)
+	{
+		//weaponAmmo = RPM<int>(proc, (weaponEntity + entity.clip1), sizeof(int));
+		weaponid = RPM<int>(proc, ((weaponEntity + entity.accPenalty) + 0x20), sizeof(int));
+		return weaponid;
+	}
+	return 0;
+}
+
+bool Memory::IsWeaponReloading()
+{
+	localPlayerBase = RPM<DWORD>(proc, (clientDll + entity.localPlayer), sizeof(DWORD));
+
+	DWORD weaponBaseIndex = RPM<DWORD>(proc, (localPlayerBase + entity.hActiveWeapon), sizeof(DWORD));
+	weaponBaseIndex &= 0xFFF;
+	DWORD weaponEntity = RPM<DWORD>(proc, (clientDll + entity.entityBase + (weaponBaseIndex - 1) * 0x10), sizeof(DWORD));
+	if (weaponEntity != NULL)
+	{
+		//weaponAmmo = RPM<int>(proc, (weaponEntity + entity.clip1), sizeof(int));
+		weaponReloading = RPM<bool>(proc, (weaponEntity + entity.reloading), sizeof(bool));
+		return weaponReloading;
+	}
+	return false;
+}
 
 DWORD Memory::GetClientDll() //client.dll 
 {
