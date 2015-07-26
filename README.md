@@ -11,6 +11,7 @@ Threads:
 
 a) ReadMemory (every 5000 ms):  
 * localPlayer: Health, Team, Flags, vecPos(x,y,z), crosshairId, playerID;
+* -> Weapon info: weaponId, weaponAmmo, weaponReloading;
 * entityLoop: Health, Team, Flags, vecPos(x,y,z), entityID;
 
 b) Triggerbot (my own code):  based in team and crosshairId
