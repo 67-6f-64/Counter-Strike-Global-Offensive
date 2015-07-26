@@ -33,6 +33,7 @@ Work in progress: i will update it alot
 
 * Visual Studio Community 2013 Update 5
 * C++
+* Win api
 * Offset dumper cs:go by Y3t1y3t at: http://www.unknowncheats.me/forum/counterstrike-global-offensive/100856-cs-go-offset-dumper-small-one.html
 * Offset dumper cs:go by Zat's at: http://www.unknowncheats.me/forum/counterstrike-global-offensive/129976-zats-csgo-dumper.html
 * Configure porjects for Directx: http://www.directxtutorial.com/lessonarticle.aspx?id=4
