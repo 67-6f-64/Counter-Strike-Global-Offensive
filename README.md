@@ -14,15 +14,15 @@ a) ReadMemory (every 5000 ms):
 * entityLoop: Health, Team, Flags, vecPos(x,y,z), entityID;
 
 b) Triggerbot (my own code):  based in team and crosshairId
-* Tested with net_fakelag 40 (90 in net_graph) and seens work fast yet
-* Added punch.x test to shoot again. And aimbot check to not shoot together.
-* Tweaked punch check
-* Added ammo count
+* works fast with high ping like 90 in net_graph, to test use net_fakelag 40 in command
+* Tweaked punch again to : -0.09f
+* Added ammo count (clip1)
 
 c) Aimbot (my own code): based in target distance
-* Fixed high ping problem, not perfect yet (ping 90 seens fast now)
-* Tweaked punch check and added check to no conflict with triggerbot together
-* Added ammo count
+* works fast with high ping like 90 in net_graph, to test use net_fakelag 40 in command
+* Tweaked punch again to : -0.09f
+* Added ammo count (clip1)
+* *removed useless angle check
 
 d) Noflash: based in color
 * need fix when turn off
