@@ -1,5 +1,9 @@
 # Counter-Strike-Global-Offensive
 
+POJECT STOPPED:
+*NOTE: INSTALLING WIN 10 and VS 2015.
+
+
 CS:GO EXTERNAL CHEAT ( Console app)
 
 * Template (RPM, WPM)
