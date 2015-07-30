@@ -67,10 +67,10 @@ float AngleBetween(Vector &angleA, Vector &angleB, bool angle)
 	float z = angleA.z * angleB.z;
 	float resultProduct = x + y + z;
 
-	//angle is or fov
-	float cos = std::cos((resultProduct / (std::sqrt(firstAngleTotal) * std::sqrt(secondAngleTotal)))); // gerar coseno
+	//angle is or fov // update here suggestion by ToxicChief from UC
+	float cos = (resultProduct / (std::sqrt(firstAngleTotal) * std::sqrt(secondAngleTotal)));
 
-	if (angle) // give angle based in cos
+	if (angle) // give angle based in cos like 45 degr
 	{
 		cos = (float)(std::acos(cos) * 180.0 / PI);
 	}
